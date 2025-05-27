@@ -4,11 +4,9 @@ return [
     'GET' => [
         '/' => ['RelatorioController', 'index'],
         '/relatorio' => ['RelatorioController', 'index'],
-        '/api/dados-diarios' => ['RelatorioController', 'getDadosDiarios'],
-        '/csrf/refresh' => ['RelatorioController', 'refreshCsrf']
+        '/api/dados-diarios' => ['RelatorioController', 'getDadosDiarios']
     ],
     'POST' => [
-        '/relatorio/filtrar' => ['RelatorioController', 'filtrar'],
-        '/api/save-settings' => ['RelatorioController', 'saveSettings']
+        '/relatorio/filtrar' => ['RelatorioController', 'filtrar']
     ]
 ];

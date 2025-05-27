@@ -1,5 +1,8 @@
-<div class="dashboard-container">    <!-- Formulário principal - Encapsulando todo o conteúdo relevante -->    <form method="GET" id="mainForm">
-        <!-- Cabeçalho -->
+
+<div class="dashboard-container">
+    <!-- Formulário principal -->
+    <form method="GET" id="mainForm">
+        <!-- CABEÇALHO COMPLETO COMO NA IMAGEM ORIGINAL -->
         <header class="dashboard-header">
             <div class="logo-container">
                 <img src="/assets/images/logo-emserh-em-png.png" alt="EMSERH" class="logo">
@@ -7,13 +10,7 @@
                     <h1>ACOMPANHAMENTO DIÁRIO DE PRODUTIVIDADE</h1>
                 </div>
             </div>
-            <div class="header-info">
-                <div class="update-info">
-                    <span>Última atualização:</span>
-                    <span class="update-time"><?php echo $data_atual; ?></span>
-                </div>
-                <h2 class="unit-name"><?php echo !empty($unidade_nome) ? htmlspecialchars($unidade_nome) : 'Selecione uma unidade'; ?></h2>
-            </div>
+                       
             <div class="filters">
                 <div class="filter-item">
                     <label for="mes">Mês</label>
@@ -36,6 +33,7 @@
                     </select>
                 </div>
             </div>
+            
             <div class="productivity-summary">
                 <div class="productivity-value">
                     <?php echo formatarNumero($produtividade_geral, 2); ?>%
@@ -59,63 +57,93 @@
             </div>
         </div>
 
-        <!-- Conteúdo principal -->
-        <?php if (!empty($unidade) && !empty($relatorio_mensal)) { ?>
+        <!-- Conteúdo principal com layout original + abas informativas COLORIDAS -->
+        <?php if (!empty($unidade) && !empty($relatorio_por_grupos)) { ?>
             <div class="services-container">
-                <?php foreach ($relatorio_mensal as $index => $servico) { 
-                    $total_executados = (int)$servico['total_executados'];
-                    $meta_pdt = (int)$servico['meta'];
-                    $progresso = calcularPorcentagemProdutividade($total_executados, $meta_pdt);
-                    
-                    // Determinar a cor da barra lateral com base no tipo de serviço
-                    $service_color = determinarCorServico($servico['natureza']);
-                ?>
-                    <div class="service-section">
-                        <div class="service-header" style="background-color: <?php echo $service_color; ?>;">
-                            <h3><?php echo htmlspecialchars($servico['natureza']); ?></h3>
-                            <div class="service-controls">
-                                <button type="button" class="btn-control" aria-label="Expandir"><i class="arrow-up"></i></button>
-                                <button type="button" class="btn-control" aria-label="Reduzir"><i class="arrow-down"></i></button>
-                                <button type="button" class="btn-control" aria-label="Anterior"><i class="arrow-left"></i></button>
-                                <button type="button" class="btn-control" aria-label="Próximo"><i class="arrow-right"></i></button>
-                                <button type="button" class="btn-control" aria-label="Restaurar"><i class="restore"></i></button>
-                                <button type="button" class="btn-control" aria-label="Mais opções"><i class="more"></i></button>
+                <?php 
+                $indiceGraficoGlobal = 0;
+                foreach ($relatorio_por_grupos as $grupoIndex => $grupo) { ?>
+                    <div class="group-container">
+                        <!-- ABA LATERAL COLORIDA COMPLETA -->
+                        <div class="group-tab" style="--grupo-cor: <?php echo htmlspecialchars($grupo['grupo_cor']); ?>; background-color: <?php echo htmlspecialchars($grupo['grupo_cor']); ?>;">
+                            <div class="group-tab-text">
+                                <?php echo htmlspecialchars($grupo['grupo_nome']); ?>
                             </div>
                         </div>
-                        
-                        <div class="service-body">
-                            <div class="chart-container">
-                                <div class="chart-legend">
-                                    <span class="legend-item"><span class="color-box pactuado"></span> Pactuado</span>
-                                    <span class="legend-item"><span class="color-box agendados"></span> Agendados</span>
-                                    <span class="legend-item"><span class="color-box realizados"></span> Realizados</span>
-                                </div>
-                                <canvas id="grafico<?php echo $index; ?>"></canvas>
+
+                        <!-- Header do grupo -->
+                        <div class="group-header" style="border-left-color: <?php echo htmlspecialchars($grupo['grupo_cor']); ?>">
+                            <h3>
+                                <span class="group-color-indicator" 
+                                      style="background-color: <?php echo htmlspecialchars($grupo['grupo_cor']); ?>"></span>
+                                <?php echo htmlspecialchars($grupo['grupo_nome']); ?>
+                            </h3>
+                            <div class="group-description">
+                                <?php echo count($grupo['servicos']); ?> serviço(s)
                             </div>
-                            
-                            <div class="gauge-summary">
-                                <div class="gauge-container">
-                                    <canvas id="gauge<?php echo $index; ?>"></canvas>
-                                    <div class="gauge-info">
-                                        <div class="gauge-value"><?php echo formatarNumero($total_executados); ?></div>
-                                        <div class="gauge-percent"><?php echo formatarNumero($progresso, 2); ?>%</div>
-                                        <div class="gauge-target"><?php echo formatarNumero($meta_pdt); ?></div>
+                        </div>
+
+                        <!-- Serviços do grupo -->
+                        <div class="group-services" style="border-left-color: <?php echo htmlspecialchars($grupo['grupo_cor']); ?>">
+                            <?php foreach ($grupo['servicos'] as $servicoIndex => $servico) { 
+                                $total_executados = (int)$servico['total_executados'];
+                                $meta_pdt = (int)$servico['meta'];
+                                $progresso = calcularPorcentagemProdutividade($total_executados, $meta_pdt);
+                                
+                                // Usar a cor do grupo para o serviço
+                                $service_color = $grupo['grupo_cor'];
+                                
+                                // Criar um índice único global
+                                $indiceGrafico = $indiceGraficoGlobal++;
+                            ?>
+                                <div class="service-section">
+                                    <div class="service-header" style="background-color: <?php echo $service_color; ?>;">
+                                        <h3><?php echo htmlspecialchars($servico['natureza']); ?></h3>
+                                        <div class="service-controls">
+                                            <button type="button" class="btn-control" aria-label="Expandir"><i class="arrow-up"></i></button>
+                                            <button type="button" class="btn-control" aria-label="Reduzir"><i class="arrow-down"></i></button>
+                                            <button type="button" class="btn-control" aria-label="Anterior"><i class="arrow-left"></i></button>
+                                            <button type="button" class="btn-control" aria-label="Próximo"><i class="arrow-right"></i></button>
+                                            <button type="button" class="btn-control" aria-label="Restaurar"><i class="restore"></i></button>
+                                            <button type="button" class="btn-control" aria-label="Mais opções"><i class="more"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="service-body">
+                                        <div class="chart-container">
+                                            <div class="chart-legend">
+                                                <span class="legend-item"><span class="color-box pactuado"></span> Pactuado</span>
+                                                <span class="legend-item"><span class="color-box agendados"></span> Agendados</span>
+                                                <span class="legend-item"><span class="color-box realizados"></span> Realizados</span>
+                                            </div>
+                                            <canvas id="grafico<?php echo $indiceGrafico; ?>"></canvas>
+                                        </div>
+                                        
+                                        <div class="gauge-summary">
+                                            <div class="gauge-container">
+                                                <canvas id="gauge<?php echo $indiceGrafico; ?>"></canvas>
+                                                <div class="gauge-info">
+                                                    <div class="gauge-value"><?php echo formatarNumero($total_executados); ?></div>
+                                                    <div class="gauge-percent"><?php echo formatarNumero($progresso, 2); ?>%</div>
+                                                    <div class="gauge-target"><?php echo formatarNumero($meta_pdt); ?></div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-details">
+                                                <div class="summary-item">Realizados | Meta PDT</div>
+                                                <div class="summary-values">
+                                                    <span class="executed"><?php echo formatarNumero($total_executados); ?></span> | 
+                                                    <span class="target"><?php echo formatarNumero($meta_pdt); ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="summary-details">
-                                    <div class="summary-item">Realizados | Meta PDT</div>
-                                    <div class="summary-values">
-                                        <span class="executed"><?php echo formatarNumero($total_executados); ?></span> | 
-                                        <span class="target"><?php echo formatarNumero($meta_pdt); ?></span>
-                                    </div>
-                                </div>
-                            </div>
+                            <?php } ?>
                         </div>
                     </div>
-                      <!-- Dados individuais removidos para evitar conflito -->
                 <?php } ?>
             </div>
-        <?php } elseif (!empty($unidade) && empty($relatorio_mensal)) { ?>
+        <?php } elseif (!empty($unidade) && empty($relatorio_por_grupos)) { ?>
             <div class="alert alert-warning">
                 <h4>Nenhum serviço encontrado</h4>
                 <p>Não foram encontrados serviços para esta unidade no período selecionado.</p>
@@ -129,16 +157,40 @@
     </form>
 </div>
 
-<?php if (!empty($unidade) && !empty($relatorio_mensal)) { ?>
+<!-- JavaScript para aplicar cores das abas automaticamente -->
 <script>
-// Dados para os gráficos
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔥 JAVASCRIPT CARREGADO - DASHBOARD ATUALIZADO!');
+    
+    // Aplicar cores de fundo nas abas
+    document.querySelectorAll('.group-tab').forEach(tab => {
+        const cor = tab.style.getPropertyValue('--grupo-cor');
+        if (cor) {
+            tab.style.backgroundColor = cor;
+            console.log('Aba colorida aplicada:', cor);
+            
+            // Efeito hover
+            tab.addEventListener('mouseenter', function() {
+                this.style.opacity = '0.8';
+            });
+            
+            tab.addEventListener('mouseleave', function() {
+                this.style.opacity = '1';
+            });
+        }
+    });
+});
+</script>
+
+<?php if (!empty($unidade) && !empty($relatorio_por_grupos)) { ?>
+<script>
+// Dados para os gráficos (layout original mantido)
 window.dadosGraficos = <?php echo json_encode($dados_graficos ?? []); ?>;
-console.log('Dados dos gráficos:', window.dadosGraficos);
-console.log('Quantidade de serviços:', <?php echo count($relatorio_mensal); ?>);
-console.log('Quantidade de gráficos:', <?php echo count($dados_graficos ?? []); ?>);
+console.log('📊 Dados dos gráficos carregados:', window.dadosGraficos);
+console.log('📈 Quantidade de grupos:', <?php echo count($relatorio_por_grupos); ?>);
 </script>
 <?php } else { ?>
 <script>
-console.log('Sem dados - Unidade:', '<?php echo $unidade; ?>', 'Relatório mensal:', <?php echo count($relatorio_mensal); ?>);
+console.log('ℹ️ Aguardando seleção de unidade...');
 </script>
 <?php } ?>

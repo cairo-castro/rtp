@@ -9,6 +9,9 @@
     --border-light: #e9ecef;
     --medical-green: #008000;
     --cardio-red: #a02222;
+    --tab-border: #ddd;
+    --tab-active: #ffffff;
+    --tab-inactive: #f8f9fa;
 }
 
 /* Reset e estilos básicos */
@@ -36,19 +39,22 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Cabeçalho */
+/* Cabeçalho completo como na imagem original */
 .dashboard-header {
     display: flex;
-    padding: 15px;
+    padding: 15px 20px;
     background-color: var(--white);
     border-bottom: 1px solid var(--border-light);
     align-items: center;
     justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 20px;
 }
 
 .logo-container {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .logo {
@@ -61,10 +67,13 @@ body {
     font-weight: bold;
     color: var(--dark-text);
     margin: 0;
+    white-space: nowrap;
 }
 
 .header-info {
     text-align: center;
+    flex-grow: 1;
+    min-width: 200px;
 }
 
 .update-info {
@@ -81,46 +90,57 @@ body {
     font-size: 1.2rem;
     font-weight: bold;
     margin: 0;
+    color: var(--dark-text);
 }
 
 .filters {
     display: flex;
     align-items: center;
     gap: 15px;
+    flex-shrink: 0;
 }
 
 .filter-item {
     display: flex;
     flex-direction: column;
+    min-width: 100px;
 }
 
 .filter-item label {
     font-size: 0.8rem;
     margin-bottom: 3px;
+    font-weight: 500;
 }
 
 .filter-select {
-    padding: 5px;
+    padding: 6px 8px;
     border: 1px solid var(--border-light);
     border-radius: 4px;
-    width: 120px;
+    font-size: 0.9rem;
+    background-color: var(--white);
 }
 
 .productivity-summary {
     background-color: #f8f9fa;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 15px 25px;
+    border-radius: 8px;
     text-align: center;
+    border: 1px solid var(--border-light);
+    flex-shrink: 0;
+    min-width: 120px;
 }
 
 .productivity-value {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: bold;
     color: var(--accent-orange);
+    margin-bottom: 2px;
 }
 
 .productivity-label {
     font-size: 0.9rem;
+    color: var(--dark-text);
+    font-weight: 500;
 }
 
 /* Formulário de filtro */
@@ -149,7 +169,98 @@ body {
     border-radius: 4px;
 }
 
-/* Seções de serviço */
+/* ===== SISTEMA DE ABAS INFORMATIVAS PARA GRUPOS ===== */
+
+/* Container principal - layout original mantido com abas laterais */
+.services-container {
+    padding: 15px;
+    padding-left: 70px; /* Espaço maior para as abas maiores */
+    position: relative;
+    min-height: 80vh; /* Altura mínima para caber todo o conteúdo */
+}
+
+/* Container para cada grupo com aba lateral */
+.group-container {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+/* Aba lateral fixa e informativa (não interativa) - PINTADA INTEIRA */
+.group-tab {
+    position: absolute;
+    left: -65px; /* Posição ajustada para aba maior */
+    top: 0;
+    bottom: 0;
+    width: 60px; /* Largura aumentada */
+    border: 1px solid var(--tab-border);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    /* A cor de fundo será definida via JavaScript baseada na cor do grupo */
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Texto vertical da aba - MAIOR */
+.group-tab-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 1.1rem; /* Aumentado de 0.85rem */
+    font-weight: 700; /* Mais bold */
+    color: white; /* Texto branco para contraste */
+    letter-spacing: 2px; /* Mais espaçamento */
+    text-align: center;
+    line-height: 1.2;
+    padding: 15px 8px; /* Padding aumentado */
+    white-space: nowrap;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra para melhor legibilidade */
+}
+
+/* Remover o indicador ::before já que agora a aba inteira é colorida */
+.group-tab::before {
+    display: none;
+}
+
+/* Container dos serviços do grupo */
+.group-services {
+    margin-left: 0;
+    position: relative;
+}
+
+/* Header do grupo (opcional, mais discreto) */
+.group-header {
+    margin-bottom: 15px;
+    padding: 12px 20px; /* Padding aumentado */
+    background-color: var(--light-gray);
+    border-radius: 6px; /* Bordas mais arredondadas */
+ 
+}
+
+.group-header h3 {
+    font-size: 1.2rem; /* Aumentado */
+    color: var(--dark-text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.group-color-indicator {
+    width: 16px; /* Aumentado */
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.group-description {
+    font-size: 0.9rem; /* Ligeiramente aumentado */
+    color: #666;
+    margin-top: 3px;
+}
+
+/* ===== SEÇÕES DE SERVIÇO (layout original mantido) ===== */
 .services-container {
     padding: 15px;
 }
@@ -324,11 +435,46 @@ body {
     content: "≡";
 }
 
-/* Responsividade */
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 1200px) {
+    .services-container {
+        margin-left: 0;
+        padding-left: 75px; /* Espaço para abas maiores em telas menores */
+    }
+    
+    .group-tab {
+        left: -70px;
+        width: 65px;
+    }
+}
+
 @media (max-width: 992px) {
     .dashboard-header {
         flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+        padding: 15px;
+    }
+    
+    .logo-container {
+        justify-content: center;
+    }
+    
+    .header-info {
+        order: 1;
+    }
+    
+    .filters {
+        order: 2;
+        justify-content: center;
+        flex-wrap: wrap;
         gap: 10px;
+    }
+    
+    .productivity-summary {
+        order: 3;
+        align-self: center;
+        min-width: auto;
     }
     
     .service-body {
@@ -340,12 +486,55 @@ body {
         padding-left: 0;
         margin-top: 20px;
     }
+    
+    .services-container {
+        margin-left: 0;
+        padding-left: 15px;
+        min-height: auto; /* Altura automática em mobile */
+    }
+    
+    .group-tab {
+        position: relative;
+        left: 0;
+        width: 100%;
+        height: 50px; /* Altura aumentada para texto maior */
+        border-radius: 6px 6px 0 0;
+        border-right: 1px solid var(--tab-border);
+        border-bottom: none;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .group-tab-text {
+        writing-mode: horizontal-tb;
+        text-orientation: initial;
+        padding: 15px 20px; /* Padding aumentado para mobile */
+        font-size: 1.0rem; /* Mantém tamanho razoável em mobile */
+        font-weight: 700;
+    }
+    
+    .group-services {
+        border-left: none;
+        border-top: 4px solid var(--border-light); /* Borda top mais espessa */
+        padding-left: 0;
+        padding-top: 15px;
+    }
 }
 
 @media (max-width: 768px) {
     .filters {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .filter-item {
+        min-width: 150px;
+        align-items: center;
+    }
+    
+    .filter-select {
+        width: 100%;
     }
     
     .service-header {
@@ -357,7 +546,26 @@ body {
     .chart-container {
         height: 250px;
     }
-    * Melhorar exibição dos rótulos de dias */
+    
+    .group-tab {
+        height: 45px; /* Ligeiramente menor em telas muito pequenas */
+    }
+    
+    .group-tab-text {
+        font-size: 0.95rem;
+        padding: 12px 15px;
+    }
+    
+    .productivity-summary {
+        padding: 12px 20px;
+    }
+    
+    .productivity-value {
+        font-size: 1.8rem;
+    }
+}
+
+/* Melhorar exibição dos rótulos de dias */
 .chart-js-render-monitor {
     font-family: Arial, sans-serif;
 }
@@ -404,4 +612,41 @@ body {
     font-size: 0.9rem;
     color: #666;
 }
+
+/* Estilo para quando não há dados */
+.welcome-message, .alert {
+    text-align: center;
+    padding: 40px 20px;
+    margin: 20px;
+    border-radius: 8px;
+}
+
+.welcome-message {
+    background-color: var(--light-gray);
+    border: 1px solid var(--border-light);
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+}
+
+/* Scrollbar personalizada para abas */
+.service-tabs::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.service-tabs::-webkit-scrollbar-track {
+    background: var(--light-gray);
+}
+
+.service-tabs::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.service-tabs::-webkit-scrollbar-thumb:hover {
+    background: #999;
 }

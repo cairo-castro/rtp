@@ -16,13 +16,12 @@
     <?php if (isset($csrf_token)): ?>
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrf_token); ?>">
     <?php endif; ?>
-    
-    <!-- Chart.js - removendo integrity para garantir carregamento -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js" 
+      <!-- Chart.js UMD version - compatível com browsers sem módulos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js" 
             crossorigin="anonymous"></script>
     
-    <!-- ChartJS Plugin Datalabels -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js" 
+    <!-- ChartJS Plugin Datalabels UMD version -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.umd.min.js" 
             crossorigin="anonymous"></script>
 </head>
 <body>

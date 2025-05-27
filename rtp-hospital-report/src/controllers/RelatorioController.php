@@ -22,7 +22,7 @@ class RelatorioController extends Controller {
     }
     
     /**
-     * Exibe o dashboard principal com os relatórios de produtividade
+     * Exibe o dashboard principal com os relatórios de produtividade organizados por grupos
      */
     public function index() {
         try {
@@ -35,6 +35,7 @@ class RelatorioController extends Controller {
                 'mes' => $inputData['mes'],
                 'data_atual' => $this->formatDateTime(),
                 'relatorio_mensal' => [],
+                'relatorio_por_grupos' => [],
                 'unidade_nome' => '',
                 'produtividade_geral' => 0,
                 'dados_graficos' => []
@@ -138,7 +139,7 @@ class RelatorioController extends Controller {
         return date('d/m/Y H:i:s');
     }
       /**
-     * Processa dados específicos de uma unidade
+     * Processa dados específicos de uma unidade com organização por grupos
      * 
      * @param array &$data
      * @param array $inputData
@@ -146,6 +147,14 @@ class RelatorioController extends Controller {
      */
     private function processarDadosUnidade(array &$data, array $inputData): void {
         try {
+            // Obter dados organizados por grupos
+            $data['relatorio_por_grupos'] = $this->model->obterRelatorioMensalPorGrupos(
+                $inputData['unidade'], 
+                $inputData['mes'], 
+                $inputData['ano']
+            );
+
+            // Manter compatibilidade com o método original (lista simples)
             $data['relatorio_mensal'] = $this->model->obterRelatorioMensal(
                 $inputData['unidade'], 
                 $inputData['mes'], 
@@ -153,9 +162,9 @@ class RelatorioController extends Controller {
             );
             
             $data['unidade_nome'] = $this->model->obterNomeUnidade($inputData['unidade']);            $data['produtividade_geral'] = $this->calcularProdutividade($data['relatorio_mensal']);
-              // Preparar dados para gráficos de forma segura
-            $data['dados_graficos'] = $this->prepararDadosGraficos(
-                $data['relatorio_mensal'], 
+              // Preparar dados para gráficos de forma segura (baseado nos grupos)
+            $data['dados_graficos'] = $this->prepararDadosGraficosPorGrupos(
+                $data['relatorio_por_grupos'], 
                 $inputData
             );
             
@@ -167,7 +176,62 @@ class RelatorioController extends Controller {
     }
     
     /**
-     * Prepara dados para gráficos de forma segura
+     * Prepara dados para gráficos organizados por grupos
+     * 
+     * @param array $relatorio_por_grupos
+     * @param array $inputData
+     * @return array
+     */
+    private function prepararDadosGraficosPorGrupos(array $relatorio_por_grupos, array $inputData): array {
+        $dadosGraficos = [];
+        $indiceGlobal = 0;
+        
+        // OTIMIZAÇÃO: Limitar o número de gráficos processados
+        $maxGraficos = 15; // Máximo de 15 gráficos por página
+        
+        foreach ($relatorio_por_grupos as $grupo) {
+            foreach ($grupo['servicos'] as $servico) {
+                if ($indiceGlobal >= $maxGraficos) {
+                    break 2; // Parar após processar o máximo de gráficos
+                }
+                
+                try {
+                    // Validar dados do serviço
+                    if (!isset($servico['servico_id']) || !is_numeric($servico['servico_id'])) {
+                        continue;
+                    }
+                      // OTIMIZAÇÃO: Usar apenas dados simulados rápidos
+                    $dadosDiarios = $this->gerarDadosRapidos($inputData['mes'], $inputData['ano']);
+                    
+                    $dadosGraficos[$indiceGlobal] = [
+                        'id' => $indiceGlobal,
+                        'grupo_id' => (int)$grupo['grupo_id'],
+                        'grupo_nome' => $this->sanitize($grupo['grupo_nome']),
+                        'grupo_cor' => $this->sanitize($grupo['grupo_cor']),
+                        'unidade_id' => (int)$inputData['unidade'],
+                        'servico_id' => (int)$servico['servico_id'],
+                        'mes' => (int)$inputData['mes'],
+                        'ano' => (int)$inputData['ano'],
+                        'nome' => $this->sanitize($servico['natureza'] ?? 'Serviço'),
+                        'meta_pdt' => (int)($servico['meta_pdt'] ?? 0),
+                        'total_executados' => (int)($servico['total_executados'] ?? 0),
+                        'dadosDiarios' => $dadosDiarios
+                    ];
+                    
+                    $indiceGlobal++;
+                    
+                } catch (Exception $e) {
+                    error_log("Erro ao preparar dados do gráfico para serviço {$servico['servico_id']}: " . $e->getMessage());
+                    continue;
+                }
+            }
+        }
+        
+        return $dadosGraficos;
+    }
+    
+    /**
+     * Prepara dados para gráficos de forma segura (método original mantido para compatibilidade)
      * 
      * @param array $relatorioMensal
      * @param array $inputData
@@ -203,6 +267,8 @@ class RelatorioController extends Controller {
                     'total_executados' => (int)($servico['total_executados'] ?? 0),
                     'dadosDiarios' => $dadosDiarios
                 ];
+                
+                $count++;
                 
             } catch (Exception $e) {
                 error_log("Erro ao preparar dados do gráfico para serviço {$servico['servico_id']}: " . $e->getMessage());

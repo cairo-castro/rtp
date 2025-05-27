@@ -49,6 +49,48 @@ class RelatorioModel {
             throw new Exception("Erro ao carregar lista de unidades");
         }
     }
+
+    /**
+     * Obtém todos os grupos de serviços ativos
+     * 
+     * @return array
+     * @throws Exception
+     */
+    public function obterGruposServicos(): array {
+        try {
+            $query = "
+                SELECT 
+                    id, 
+                    nome, 
+                    descricao, 
+                    cor 
+                FROM servico_grupo 
+                WHERE ativo = 1 
+                ORDER BY nome 
+                LIMIT ?
+            ";
+            
+            $stmt = $this->pdo->prepare($query);
+            $stmt->bindValue(1, self::MAX_RESULTADOS, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $grupos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Sanitizar dados de saída
+            return array_map(function($grupo) {
+                return [
+                    'id' => (int)$grupo['id'],
+                    'nome' => $this->sanitizeOutput($grupo['nome']),
+                    'descricao' => $this->sanitizeOutput($grupo['descricao'] ?? ''),
+                    'cor' => $this->sanitizeOutput($grupo['cor'] ?? '#6B7280')
+                ];
+            }, $grupos);
+            
+        } catch (PDOException $e) {
+            error_log("Erro ao obter grupos de serviços: " . $e->getMessage());
+            throw new Exception("Erro ao carregar grupos de serviços");
+        }
+    }
     
     /**
      * Obtém o nome de uma unidade pelo ID com validação
@@ -88,7 +130,107 @@ class RelatorioModel {
     }
     
     /**
-     * Obtém o relatório mensal com validação e segurança
+     * Obtém o relatório mensal organizado por grupos com validação e segurança
+     * 
+     * @param int $unidade_id
+     * @param int $mes
+     * @param int $ano
+     * @return array
+     * @throws Exception
+     */
+    public function obterRelatorioMensalPorGrupos($unidade_id, $mes, $ano): array {
+        // Validar parâmetros
+        $this->validateId($unidade_id, 'unidade_id');
+        $this->validateMonth($mes);
+        $this->validateYear($ano);
+        
+        try {
+            // Query otimizada incluindo dados do grupo
+            $query = "
+            SELECT 
+                s.unidade_id,
+                s.id AS servico_id,
+                s.grupo_id,
+                u.nome AS unidade_nome,
+                s.natureza,
+                sg.nome AS grupo_nome,
+                sg.descricao AS grupo_descricao,
+                sg.cor AS grupo_cor,
+                CONCAT('01/', LPAD(?, 2, '0'), '/', ?) AS mes_agrupado,
+                COALESCE(p.meta, s.meta, 0) AS meta,
+                COALESCE(p.meta, 0) AS meta_pdt,
+                COALESCE(s.meta, 0) AS pactuado,
+                COALESCE(SUM(r.agendados), 0) AS total_agendados,
+                COALESCE(SUM(r.executados), 0) AS executados,
+                COALESCE(SUM(r.executados_por_encaixe), 0) AS total_executados_por_encaixe,
+                COALESCE(SUM(r.executados + r.executados_por_encaixe), 0) AS total_executados
+            FROM 
+                servico s
+                INNER JOIN unidade u ON s.unidade_id = u.id
+                LEFT JOIN servico_grupo sg ON s.grupo_id = sg.id
+                LEFT JOIN rtpdiario r ON 
+                    r.unidade_id = s.unidade_id AND 
+                    r.servico_id = s.id AND
+                    r.ano = ? AND
+                    r.mes = ?
+                LEFT JOIN pdt p ON 
+                    p.servico_id = s.id AND 
+                    p.unidade_id = s.unidade_id AND
+                    MAKEDATE(?, 1) BETWEEN 
+                        COALESCE(p.data_inicio, '1900-01-01') AND 
+                        COALESCE(p.data_fim, '2100-12-31')
+            WHERE 
+                s.unidade_id = ?
+            GROUP BY 
+                s.unidade_id, s.id, s.grupo_id, u.nome, s.natureza, 
+                sg.nome, sg.descricao, sg.cor,
+                COALESCE(p.meta, s.meta, 0), COALESCE(p.meta, 0), COALESCE(s.meta, 0)
+            ORDER BY 
+                sg.nome ASC, s.natureza ASC
+            LIMIT ?
+            ";
+            
+            $stmt = $this->pdo->prepare($query);
+            $stmt->bindValue(1, (int)$mes, PDO::PARAM_INT);
+            $stmt->bindValue(2, (int)$ano, PDO::PARAM_INT);
+            $stmt->bindValue(3, (int)$ano, PDO::PARAM_INT);
+            $stmt->bindValue(4, (int)$mes, PDO::PARAM_INT);
+            $stmt->bindValue(5, (int)$ano, PDO::PARAM_INT);
+            $stmt->bindValue(6, (int)$unidade_id, PDO::PARAM_INT);
+            $stmt->bindValue(7, self::MAX_RESULTADOS, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Organizar dados por grupo
+            $relatorio_agrupado = [];
+            foreach ($resultado as $servico) {
+                $grupo_id = $servico['grupo_id'] ?? 0;
+                $grupo_nome = $servico['grupo_nome'] ?? 'Sem Grupo';
+                $grupo_cor = $servico['grupo_cor'] ?? '#6B7280';
+                
+                if (!isset($relatorio_agrupado[$grupo_id])) {
+                    $relatorio_agrupado[$grupo_id] = [
+                        'grupo_id' => $grupo_id,
+                        'grupo_nome' => $grupo_nome,
+                        'grupo_cor' => $grupo_cor,
+                        'servicos' => []
+                    ];
+                }
+                
+                $relatorio_agrupado[$grupo_id]['servicos'][] = $this->sanitizeRelatorioItem($servico);
+            }
+            
+            return array_values($relatorio_agrupado);
+            
+        } catch (PDOException $e) {
+            error_log("Erro ao obter relatório mensal por grupos: " . $e->getMessage());
+            throw new Exception("Erro ao carregar dados do relatório");
+        }
+    }
+    
+    /**
+     * Obtém o relatório mensal com validação e segurança (método original mantido para compatibilidade)
      * 
      * @param int $unidade_id
      * @param int $mes
@@ -107,8 +249,11 @@ class RelatorioModel {
             SELECT 
                 s.unidade_id,
                 s.id AS servico_id,
+                s.grupo_id,
                 u.nome AS unidade_nome,
                 s.natureza,
+                sg.nome AS grupo_nome,
+                sg.cor AS grupo_cor,
                 CONCAT('01/', LPAD(?, 2, '0'), '/', ?) AS mes_agrupado,
                 COALESCE(p.meta, s.meta, 0) AS meta,
                 COALESCE(p.meta, 0) AS meta_pdt,
@@ -120,6 +265,7 @@ class RelatorioModel {
             FROM 
                 servico s
                 INNER JOIN unidade u ON s.unidade_id = u.id
+                LEFT JOIN servico_grupo sg ON s.grupo_id = sg.id
                 LEFT JOIN rtpdiario r ON 
                     r.unidade_id = s.unidade_id AND 
                     r.servico_id = s.id AND
@@ -134,7 +280,8 @@ class RelatorioModel {
             WHERE 
                 s.unidade_id = ?
             GROUP BY 
-                s.unidade_id, s.id, u.nome, s.natureza, 
+                s.unidade_id, s.id, s.grupo_id, u.nome, s.natureza, 
+                sg.nome, sg.cor,
                 COALESCE(p.meta, s.meta, 0), COALESCE(p.meta, 0), COALESCE(s.meta, 0)
             ORDER BY 
                 s.natureza
@@ -392,6 +539,9 @@ class RelatorioModel {
         return [
             'unidade_id' => (int)$item['unidade_id'],
             'servico_id' => (int)$item['servico_id'],
+            'grupo_id' => (int)($item['grupo_id'] ?? 0),
+            'grupo_nome' => $this->sanitizeOutput($item['grupo_nome'] ?? 'Sem Grupo'),
+            'grupo_cor' => $this->sanitizeOutput($item['grupo_cor'] ?? '#6B7280'),
             'unidade_nome' => $this->sanitizeOutput($item['unidade_nome']),
             'natureza' => $this->sanitizeOutput($item['natureza']),
             'mes_agrupado' => $this->sanitizeOutput($item['mes_agrupado']),
