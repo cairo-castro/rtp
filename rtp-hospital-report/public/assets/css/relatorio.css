@@ -1,0 +1,407 @@
+/* Cores principais */
+:root {
+    --primary-blue: #0d6efd;
+    --primary-green: #198754;
+    --accent-orange: #fd7e14;
+    --light-gray: #f8f9fa;
+    --white: #ffffff;
+    --dark-text: #333333;
+    --border-light: #e9ecef;
+    --medical-green: #008000;
+    --cardio-red: #a02222;
+}
+
+/* Reset e estilos básicos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--light-gray);
+    color: var(--dark-text);
+    padding: 0;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Layout do dashboard */
+.dashboard-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: var(--white);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Cabeçalho */
+.dashboard-header {
+    display: flex;
+    padding: 15px;
+    background-color: var(--white);
+    border-bottom: 1px solid var(--border-light);
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 50px;
+    margin-right: 15px;
+}
+
+.header-title h1 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--dark-text);
+    margin: 0;
+}
+
+.header-info {
+    text-align: center;
+}
+
+.update-info {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.update-time {
+    font-weight: bold;
+}
+
+.unit-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-item label {
+    font-size: 0.8rem;
+    margin-bottom: 3px;
+}
+
+.filter-select {
+    padding: 5px;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    width: 120px;
+}
+
+.productivity-summary {
+    background-color: #f8f9fa;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.productivity-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--accent-orange);
+}
+
+.productivity-label {
+    font-size: 0.9rem;
+}
+
+/* Formulário de filtro */
+.filter-form {
+    padding: 10px 15px;
+    background-color: var(--light-gray);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.form-control {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+}
+
+/* Seções de serviço */
+.services-container {
+    padding: 15px;
+}
+
+.service-section {
+    margin-bottom: 20px;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    color: var(--white);
+}
+
+.service-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.service-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-control {
+    background: none;
+    border: none;
+    color: var(--white);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 3px;
+}
+
+.service-body {
+    display: flex;
+    padding: 15px;
+    background-color: var(--white);
+}
+
+.chart-container {
+    flex: 1;
+    position: relative;
+    height: 300px;
+}
+
+.chart-legend {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.color-box {
+    width: 12px;
+    height: 12px;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+.color-box.pactuado {
+    background-color: var(--primary-blue);
+}
+
+.color-box.agendados {
+    background-color: var(--primary-green);
+}
+
+.color-box.realizados {
+    background-color: var(--accent-orange);
+}
+
+.gauge-summary {
+    width: 240px;
+    padding-left: 15px;
+}
+
+.gauge-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.gauge-info {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.gauge-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--accent-orange);
+}
+
+.gauge-percent {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--dark-text);
+}
+
+.gauge-target {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.summary-details {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.summary-item {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.summary-values {
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 5px;
+}
+
+.pactuado-value, .agendados-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.summary-labels {
+    display: flex;
+    justify-content: space-evenly;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* Ícones */
+.arrow-up::after {
+    content: "↑";
+}
+
+.arrow-down::after {
+    content: "↓";
+}
+
+.arrow-left::after {
+    content: "←";
+}
+
+.arrow-right::after {
+    content: "→";
+}
+
+.restore::after {
+    content: "⟲";
+}
+
+.more::after {
+    content: "≡";
+}
+
+/* Responsividade */
+@media (max-width: 992px) {
+    .dashboard-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .service-body {
+        flex-direction: column;
+    }
+    
+    .gauge-summary {
+        width: 100%;
+        padding-left: 0;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .filters {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .service-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    * Melhorar exibição dos rótulos de dias */
+.chart-js-render-monitor {
+    font-family: Arial, sans-serif;
+}
+
+/* Estilos para o eixo X para dias das semanas */
+.chart-container .chartjs-axis-label {
+    font-size: 10px;
+    line-height: 1.2;
+    text-align: center;
+}
+
+/* Aprimoramento dos gauges */
+.gauge-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.gauge-info {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+}
+
+.gauge-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--accent-orange);
+    margin-bottom: 5px;
+}
+
+.gauge-percent {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--dark-text);
+    margin-bottom: 5px;
+}
+
+.gauge-target {
+    font-size: 0.9rem;
+    color: #666;
+}
+}
