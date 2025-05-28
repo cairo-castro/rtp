@@ -1,62 +1,9 @@
 
-<div class="dashboard-container">
-    <!-- Formulário principal -->
+<div class="dashboard-container">    <!-- Formulário principal -->
     <form method="GET" id="mainForm">
-        <!-- CABEÇALHO COMPLETO COMO NA IMAGEM ORIGINAL -->
-        <header class="dashboard-header">
-            <div class="logo-container">
-                <img src="/assets/images/logo-emserh-em-png.png" alt="EMSERH" class="logo">
-                <div class="header-title">
-                    <h1>ACOMPANHAMENTO DIÁRIO DE PRODUTIVIDADE</h1>
-                </div>
-            </div>
-                       
-            <div class="filters">
-                <div class="filter-item">
-                    <label for="mes">Mês</label>
-                    <select id="mes" name="mes" class="filter-select" onchange="document.getElementById('mainForm').submit();">
-                        <?php foreach ($meses_nomes as $num => $nome) { ?>
-                            <option value="<?php echo $num; ?>" <?php echo ($mes == $num) ? 'selected' : ''; ?>>
-                                <?php echo $nome; ?>
-                            </option>
-                        <?php } ?>
-                    </select>
-                </div>
-                <div class="filter-item">
-                    <label for="ano">Ano</label>
-                    <select id="ano" name="ano" class="filter-select" onchange="document.getElementById('mainForm').submit();">
-                        <?php for ($i = 2023; $i <= 2030; $i++) { ?>
-                            <option value="<?php echo $i; ?>" <?php echo ($ano == $i) ? 'selected' : ''; ?>>
-                                <?php echo $i; ?>
-                            </option>
-                        <?php } ?>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="productivity-summary">
-                <div class="productivity-value">
-                    <?php echo formatarNumero($produtividade_geral, 2); ?>%
-                </div>
-                <div class="productivity-label">Produtividade</div>
-            </div>
-        </header>
+        <!-- CABEÇALHO FIXO - usando partial -->
+        <?php include __DIR__ . '/../partials/header.php'; ?>
         
-        <!-- Seleção de unidade -->
-        <div class="filter-form">
-            <div class="form-group">
-                <label for="unidade">Unidade:</label>
-                <select name="unidade" id="unidade" class="form-control" onchange="document.getElementById('mainForm').submit();">
-                    <option value="">Selecione a Unidade</option>
-                    <?php foreach ($unidades as $u) { ?>
-                        <option value="<?php echo $u['id']; ?>" <?php echo ($unidade == $u['id']) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($u['nome']); ?>
-                        </option>
-                    <?php } ?>
-                </select>
-            </div>
-        </div>
-
         <!-- Conteúdo principal com layout original + abas informativas COLORIDAS -->
         <?php if (!empty($unidade) && !empty($relatorio_por_grupos)) { ?>
             <div class="services-container">
@@ -85,9 +32,8 @@
 
                         <!-- Serviços do grupo -->
                         <div class="group-services" style="border-left-color: <?php echo htmlspecialchars($grupo['grupo_cor']); ?>">
-                            <?php foreach ($grupo['servicos'] as $servicoIndex => $servico) { 
-                                $total_executados = (int)$servico['total_executados'];
-                                $meta_pdt = (int)$servico['meta'];
+                            <?php foreach ($grupo['servicos'] as $servicoIndex => $servico) {                                $total_executados = (int)$servico['total_executados'];
+                                $meta_pdt = (int)$servico['meta_pdt'];
                                 $progresso = calcularPorcentagemProdutividade($total_executados, $meta_pdt);
                                 
                                 // Usar a cor do grupo para o serviço
@@ -111,11 +57,6 @@
                                     
                                     <div class="service-body">
                                         <div class="chart-container">
-                                            <div class="chart-legend">
-                                                <span class="legend-item"><span class="color-box pactuado"></span> Pactuado</span>
-                                                <span class="legend-item"><span class="color-box agendados"></span> Agendados</span>
-                                                <span class="legend-item"><span class="color-box realizados"></span> Realizados</span>
-                                            </div>
                                             <canvas id="grafico<?php echo $indiceGrafico; ?>"></canvas>
                                         </div>
                                         
@@ -152,8 +93,7 @@
             <div class="welcome-message">
                 <h3>Bem-vindo ao Sistema RTP</h3>
                 <p>Selecione uma unidade para visualizar o relatório de produtividade.</p>
-            </div>
-        <?php } ?>
+            </div>        <?php } ?>
     </form>
 </div>
 

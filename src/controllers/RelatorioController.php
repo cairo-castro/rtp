@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../core/CsrfProtection.php';
-
 /**
  * Controller responsável pelos relatórios de produtividade
  * 
@@ -15,10 +13,8 @@ class RelatorioController extends Controller {
     private const ANO_MINIMO = 2020;
     private const ANO_MAXIMO = 2030;
     private const MES_MINIMO = 1;
-    private const MES_MAXIMO = 12;
-      public function __construct() {
+    private const MES_MAXIMO = 12;    public function __construct() {
         $this->model = new RelatorioModel();
-        // CSRF Protection uses static methods, no need to instantiate
     }
     
     /**
@@ -45,91 +41,42 @@ class RelatorioController extends Controller {
             if (!empty($inputData['unidade'])) {
                 $this->processarDadosUnidade($data, $inputData);
             }
-            
-            $this->render('relatorio/dashboard', $data);
+              $this->render('relatorio/dashboard', $data);
               } catch (Exception $e) {
-            $this->handleError('Erro ao carregar dashboard: ' . $e->getMessage(), 500);
+            error_log('Erro ao carregar dashboard: ' . $e->getMessage());
+            // Renderizar com dados vazios em caso de erro
+            $this->render('relatorio/dashboard', [
+                'unidades' => [],
+                'meses_nomes' => [],
+                'unidade' => '',
+                'ano' => date('Y'),
+                'mes' => date('m'),
+                'data_atual' => $this->formatDateTime(),
+                'relatorio_mensal' => [],
+                'relatorio_por_grupos' => [],
+                'unidade_nome' => 'Erro ao carregar',
+                'produtividade_geral' => 0,
+                'dados_graficos' => []
+            ]);
         }
     }
-    
-    /**
-     * Valida e sanitiza dados de entrada
+      /**
+     * Valida e obtém dados de entrada
      * 
      * @return array
-     */    private function validateAndSanitizeInput(): array {
-        $unidade = $this->sanitize($_GET['unidade'] ?? '');
-        $ano = $this->sanitize($_GET['ano'] ?? date('Y'));
-        $mes = $this->sanitize($_GET['mes'] ?? date('m'));
-        
-        // Validação rigorosa dos parâmetros
-        $ano = $this->validateYear($ano);
-        $mes = $this->validateMonth($mes);
-        $unidade = $this->validateUnidadeId($unidade);
+     */
+    private function validateAndSanitizeInput(): array {
+        $unidade = $_GET['unidade'] ?? '';
+        $ano = $_GET['ano'] ?? date('Y');
+        $mes = $_GET['mes'] ?? date('m');
         
         return [
             'unidade' => $unidade,
-            'ano' => $ano,
-            'mes' => $mes
+            'ano' => (int)$ano,
+            'mes' => (int)$mes
         ];
     }
-    
-    /**
-     * Valida o ano
-     * 
-     * @param mixed $ano
-     * @return int
-     */
-    private function validateYear($ano): int {
-        if (!is_numeric($ano)) {
-            return (int)date('Y');
-        }
-        
-        $anoInt = (int)$ano;
-        if ($anoInt < self::ANO_MINIMO || $anoInt > self::ANO_MAXIMO) {
-            return (int)date('Y');
-        }
-        
-        return $anoInt;
-    }
-    
-    /**
-     * Valida o mês
-     * 
-     * @param mixed $mes
-     * @return int
-     */
-    private function validateMonth($mes): int {
-        if (!is_numeric($mes)) {
-            return (int)date('m');
-        }
-        
-        $mesInt = (int)$mes;
-        if ($mesInt < self::MES_MINIMO || $mesInt > self::MES_MAXIMO) {
-            return (int)date('m');
-        }
-        
-        return $mesInt;
-    }
-    
-    /**
-     * Valida o ID da unidade
-     * 
-     * @param mixed $unidade
-     * @return string
-     */
-    private function validateUnidadeId($unidade): string {
-        if (empty($unidade) || !is_numeric($unidade)) {
-            return '';
-        }
-        
-        $unidadeInt = (int)$unidade;
-        if ($unidadeInt <= 0) {
-            return '';
-        }
-        
-        return (string)$unidadeInt;
-    }
-    
+      
     /**
      * Formata data e hora atual
      * 
@@ -174,45 +121,55 @@ class RelatorioController extends Controller {
             $data['unidade_nome'] = 'Erro ao carregar unidade';
         }
     }
-    
-    /**
-     * Prepara dados para gráficos organizados por grupos
+      /**
+     * OTIMIZADO: Prepara dados para gráficos organizados por grupos - SEM N+1 QUERIES
      * 
      * @param array $relatorio_por_grupos
      * @param array $inputData
      * @return array
-     */
-    private function prepararDadosGraficosPorGrupos(array $relatorio_por_grupos, array $inputData): array {
+     */    private function prepararDadosGraficosPorGrupos(array $relatorio_por_grupos, array $inputData): array {
         $dadosGraficos = [];
         $indiceGlobal = 0;
         
-        // OTIMIZAÇÃO: Limitar o número de gráficos processados
-        $maxGraficos = 15; // Máximo de 15 gráficos por página
+        // OTIMIZAÇÃO CRÍTICA: Coletar todos os IDs dos serviços primeiro
+        $todos_servicos_ids = [];
+        foreach ($relatorio_por_grupos as $grupo) {
+            foreach ($grupo['servicos'] as $servico) {
+                if (isset($servico['servico_id']) && is_numeric($servico['servico_id'])) {
+                    $todos_servicos_ids[] = (int)$servico['servico_id'];
+                }
+            }
+        }
+        
+        // OTIMIZAÇÃO: Buscar TODOS os dados diários de uma vez só
+        $todos_dados_diarios = $this->obterTodosDadosDiariosLote(
+            $inputData['unidade'], 
+            $todos_servicos_ids, 
+            $inputData['mes'], 
+            $inputData['ano']
+        );
         
         foreach ($relatorio_por_grupos as $grupo) {
             foreach ($grupo['servicos'] as $servico) {
-                if ($indiceGlobal >= $maxGraficos) {
-                    break 2; // Parar após processar o máximo de gráficos
-                }
-                
-                try {
+                  try {
                     // Validar dados do serviço
                     if (!isset($servico['servico_id']) || !is_numeric($servico['servico_id'])) {
                         continue;
                     }
-                      // OTIMIZAÇÃO: Usar apenas dados simulados rápidos
-                    $dadosDiarios = $this->gerarDadosRapidos($inputData['mes'], $inputData['ano']);
+                    
+                    $servico_id = (int)$servico['servico_id'];
+                      // OTIMIZAÇÃO: Usar dados já carregados em lote
+                    $dadosDiarios = $todos_dados_diarios[$servico_id] ?? [];
                     
                     $dadosGraficos[$indiceGlobal] = [
-                        'id' => $indiceGlobal,
-                        'grupo_id' => (int)$grupo['grupo_id'],
-                        'grupo_nome' => $this->sanitize($grupo['grupo_nome']),
-                        'grupo_cor' => $this->sanitize($grupo['grupo_cor']),
+                        'id' => $indiceGlobal,                        'grupo_id' => (int)$grupo['grupo_id'],
+                        'grupo_nome' => $grupo['grupo_nome'],
+                        'grupo_cor' => $grupo['grupo_cor'],
                         'unidade_id' => (int)$inputData['unidade'],
-                        'servico_id' => (int)$servico['servico_id'],
+                        'servico_id' => $servico_id,
                         'mes' => (int)$inputData['mes'],
                         'ano' => (int)$inputData['ano'],
-                        'nome' => $this->sanitize($servico['natureza'] ?? 'Serviço'),
+                        'nome' => $servico['natureza'] ?? 'Serviço',
                         'meta_pdt' => (int)($servico['meta_pdt'] ?? 0),
                         'total_executados' => (int)($servico['total_executados'] ?? 0),
                         'dadosDiarios' => $dadosDiarios
@@ -229,32 +186,32 @@ class RelatorioController extends Controller {
         
         return $dadosGraficos;
     }
-    
-    /**
+      /**
      * Prepara dados para gráficos de forma segura (método original mantido para compatibilidade)
      * 
      * @param array $relatorioMensal
      * @param array $inputData
      * @return array
-     */    private function prepararDadosGraficos(array $relatorioMensal, array $inputData): array {
+     */
+    private function prepararDadosGraficos(array $relatorioMensal, array $inputData): array {
         $dadosGraficos = [];
         
-        // OTIMIZAÇÃO: Limitar o número de gráficos processados
-        $maxGraficos = 10; // Máximo de 10 gráficos por página
-        $count = 0;
+        // OTIMIZAÇÃO: Remover limite - processar todos os gráficos disponíveis
         
         foreach ($relatorioMensal as $index => $servico) {
-            if ($count >= $maxGraficos) {
-                break; // Parar após processar o máximo de gráficos
-            }
-            
             try {
                 // Validar dados do serviço
                 if (!isset($servico['servico_id']) || !is_numeric($servico['servico_id'])) {
                     continue;
                 }
-                  // OTIMIZAÇÃO: Usar apenas dados simulados rápidos
-                $dadosDiarios = $this->gerarDadosRapidos($inputData['mes'], $inputData['ano']);
+                
+                // OTIMIZAÇÃO: Usar apenas dados reais do banco
+                $dadosDiarios = $this->model->obterDadosDiariosServico(
+                    $inputData['unidade'], 
+                    $servico['servico_id'], 
+                    $inputData['mes'], 
+                    $inputData['ano']
+                );
                 
                 $dadosGraficos[$index] = [
                     'id' => $index,
@@ -262,13 +219,11 @@ class RelatorioController extends Controller {
                     'servico_id' => (int)$servico['servico_id'],
                     'mes' => (int)$inputData['mes'],
                     'ano' => (int)$inputData['ano'],
-                    'nome' => $this->sanitize($servico['natureza'] ?? 'Serviço'),
+                    'nome' => $servico['natureza'] ?? 'Serviço',
                     'meta_pdt' => (int)($servico['meta_pdt'] ?? 0),
                     'total_executados' => (int)($servico['total_executados'] ?? 0),
                     'dadosDiarios' => $dadosDiarios
                 ];
-                
-                $count++;
                 
             } catch (Exception $e) {
                 error_log("Erro ao preparar dados do gráfico para serviço {$servico['servico_id']}: " . $e->getMessage());
@@ -277,20 +232,18 @@ class RelatorioController extends Controller {
         }
         
         return $dadosGraficos;
-    }
-    
-    /**
+    }    /**
      * Endpoint API para obter dados diários
      * 
      * @return void
      */
     public function getDadosDiarios(): void {
-        $unidade = $this->sanitize($_GET['unidade'] ?? '');
-        $servico_id = $this->sanitize($_GET['servico_id'] ?? '');
-        $mes = $this->sanitize($_GET['mes'] ?? date('m'));
-        $ano = $this->sanitize($_GET['ano'] ?? date('Y'));
+        $unidade = $_GET['unidade'] ?? '';
+        $servico_id = $_GET['servico_id'] ?? '';
+        $mes = $_GET['mes'] ?? date('m');
+        $ano = $_GET['ano'] ?? date('Y');
         
-        // Validar parâmetros
+        // Validar parâmetros básicos
         if (empty($unidade) || empty($servico_id) || !is_numeric($unidade) || !is_numeric($servico_id)) {
             $this->json(['error' => 'Parâmetros obrigatórios inválidos']);
             return;
@@ -303,9 +256,9 @@ class RelatorioController extends Controller {
             $this->json(['error' => 'Erro ao obter dados: ' . $e->getMessage()]);
         }
     }
-    
-    /**
+      /**
      * Calcula a produtividade geral do relatório
+     * Considera apenas serviços com meta_pdt > 0 (meta válida da tabela PDT para o período)
      */
     private function calcularProdutividade($relatorio_mensal) {
         if (empty($relatorio_mensal)) return 0;
@@ -314,101 +267,36 @@ class RelatorioController extends Controller {
         $total_servicos = 0;
         
         foreach ($relatorio_mensal as $servico) {
-            $meta = (int)$servico['meta'];
+            $meta_pdt = (int)$servico['meta_pdt'];
             $realizado = (int)$servico['total_executados'];
             
-            if ($meta > 0) {
-                $soma_produtividade += min(100, ($realizado / $meta) * 100);
+            // Só considera serviços que têm meta PDT válida para o período
+            if ($meta_pdt > 0) {
+                $soma_produtividade += min(100, ($realizado / $meta_pdt) * 100);
                 $total_servicos++;
             }
-        }
-          return $total_servicos > 0 ? $soma_produtividade / $total_servicos : 0;
-    }
-    
-    /**
-     * Valida token CSRF para operações POST
-     * 
-     * @return bool
-     */
-    protected function validateCsrfToken(): bool {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return true; // GET requests não precisam de CSRF
-        }
-          $token = $_POST['csrf_token'] ?? '';
-        return CsrfProtection::validateToken($token);
+        }        return $total_servicos > 0 ? $soma_produtividade / $total_servicos : 0;
     }
       /**
-     * Middleware para validação CSRF em operações POST
+     * OTIMIZAÇÃO: Obtém dados diários de múltiplos serviços em uma única consulta
+     * Evita o problema N+1 queries
      * 
-     * @throws Exception
-     */
-    protected function requireCsrfValidation(): void {
-        if (!$this->validateCsrfToken()) {
-            $this->handleError('Token CSRF inválido ou expirado', 403);
-        }
-    }
-    
-    /**
-     * Endpoint para renovar token CSRF via AJAX
-     */
-    public function refreshCsrf(): void {
-        try {
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => true,
-                'token' => CsrfProtection::generateToken()
-            ]);
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'error' => 'Erro ao renovar token CSRF'
-            ]);
-        }
-    }
-
-    /**
-     * Gera dados rápidos simulados para gráficos sem consultas pesadas
-     * 
+     * @param int $unidade_id
+     * @param array $servicos_ids
      * @param int $mes
      * @param int $ano
      * @return array
-     */    private function gerarDadosRapidos(int $mes, int $ano): array {
-        $diasNoMes = date('t', mktime(0, 0, 0, $mes, 1, $ano));
-        $dados = [];
+     */
+    private function obterTodosDadosDiariosLote($unidade_id, $servicos_ids, $mes, $ano) {
+        if (empty($servicos_ids)) return [];
         
-        // Gerar dados simulados simples baseados em padrões realistas
-        $baseValue = 100; // Valor base para simulação
-        
-        for ($dia = 1; $dia <= $diasNoMes; $dia++) {
-            // Simular variação natural nos dados com padrão mais baixo nos fins de semana
-            $diaSemana = date('N', mktime(0, 0, 0, $mes, $dia, $ano));
-            $multiplicador = ($diaSemana >= 6) ? 0.3 : 1.0; // Reduzir aos fins de semana
+        try {
+            // Usar método otimizado do model
+            return $this->model->obterDadosDiariosMultiplosServicos($unidade_id, $servicos_ids, $mes, $ano);
             
-            // Adicionar pequena variação aleatória sem usar funções pesadas
-            $variacao = ($dia % 7) * 0.1; // Variação baseada no dia
-            $valor = (int)($baseValue * $multiplicador * (1 + $variacao));
-              $dados[] = [
-                'dia' => $dia,
-                'data' => sprintf('%04d-%02d-%02d', $ano, $mes, $dia),
-                'pactuado' => max(0, $valor),
-                'agendado' => max(0, (int)($valor * 0.9)),
-                'realizado' => max(0, (int)($valor * 0.8)),
-                'dia_semana' => $this->obterNomeDiaSemana($diaSemana)
-            ];
+        } catch (Exception $e) {
+            error_log("Erro ao obter dados diários em lote: " . $e->getMessage());
+            return [];
         }
-        
-        return $dados;
-    }
-    
-    /**
-     * Converte número do dia da semana em nome abreviado
-     * 
-     * @param int $diaSemana
-     * @return string
-     */    private function obterNomeDiaSemana(int $diaSemana): string {
-        // date('N') retorna 1=Segunda, 2=Terça, ..., 7=Domingo
-        $nomes = [1 => 'Seg', 2 => 'Ter', 3 => 'Qua', 4 => 'Qui', 5 => 'Sex', 6 => 'Sab', 7 => 'Dom'];
-        return $nomes[$diaSemana] ?? 'Dom';
     }
 }

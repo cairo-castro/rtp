@@ -17,16 +17,15 @@ document.addEventListener("DOMContentLoaded", function () {
             console.warn('Erro ao registrar ChartDataLabels:', error);
         }
     }
-    
-    // Configurações de cores no tema verde, azul e laranja
+      // Configurações de cores no tema verde, azul e laranja
     const CORES = {
         pactuado: {
             background: '#0d6efd', // Azul
             border: '#0d6efd'
         },
         agendado: {
-            background: '#999999', // Cinza
-            border: '#999999'
+            background: '#1e3a8a', // Azul escuro
+            border: '#1e3a8a'
         },
         realizado: {
             background: '#fd7e14', // Laranja
@@ -93,8 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const realizados = dados.dadosDiarios.map(d => d.realizado);
             
             console.log(`Criando gráfico de barras para ${elementId} com ${labels.length} pontos de dados`);
-            
-            // Criar o gráfico de barras
+              // Criar o gráfico de barras agrupadas
             const grafico = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -105,54 +103,79 @@ document.addEventListener("DOMContentLoaded", function () {
                             data: pactuados,
                             backgroundColor: CORES.pactuado.background,
                             borderColor: CORES.pactuado.border,
-                            borderWidth: 1
+                            borderWidth: 1,
+                            borderRadius: 3,
+                            borderSkipped: false
                         },
                         {
                             label: 'Agendados',
                             data: agendados,
                             backgroundColor: CORES.agendado.background,
                             borderColor: CORES.agendado.border,
-                            borderWidth: 1
+                            borderWidth: 1,
+                            borderRadius: 3,
+                            borderSkipped: false
                         },
                         {
                             label: 'Realizados',
                             data: realizados,
                             backgroundColor: CORES.realizado.background,
                             borderColor: CORES.realizado.border,
-                            borderWidth: 1
+                            borderWidth: 1,
+                            borderRadius: 3,
+                            borderSkipped: false
                         }
                     ]
-                },
-                options: {
+                },                options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
                     plugins: {
                         datalabels: {
                             display: function(context) {
                                 // Mostrar apenas valores significativos
-                                return context.dataset.data[context.dataIndex] > 5;
+                                return context.dataset.data[context.dataIndex] > 0;
                             },
                             anchor: 'end',
                             align: 'top',
                             formatter: function(value) {
-                                return value;
+                                return value > 0 ? value : '';
                             },
                             color: '#333',
                             font: {
                                 size: 9,
                                 weight: 'bold'
                             }
-                        },
-                        legend: {
-                            display: false // Ocultar legenda pois já temos uma personalizada
+                        },                        legend: {
+                            display: true,
+                            position: 'top',
+                            align: 'center',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    size: 11
+                                }
+                            }
                         },
                         tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(255, 255, 255, 0.3)',
+                            borderWidth: 1,
                             callbacks: {
                                 title: function(tooltipItems) {
                                     const item = tooltipItems[0];
                                     const dia = dados.dadosDiarios[item.dataIndex].dia;
                                     const diaSemana = dados.dadosDiarios[item.dataIndex].dia_semana;
                                     return `Dia ${dia} (${diaSemana})`;
+                                },
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y}`;
                                 }
                             }
                         }
@@ -163,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 display: false
                             },
                             ticks: {
-                                autoSkip: true,
+                                autoSkip: false,
                                 maxRotation: 0,
                                 font: {
                                     size: 10
@@ -185,13 +208,21 @@ document.addEventListener("DOMContentLoaded", function () {
                                 color: 'rgba(0, 0, 0, 0.05)'
                             },
                             ticks: {
-                                precision: 0
+                                precision: 0,
+                                callback: function(value) {
+                                    return Number.isInteger(value) ? value : '';
+                                }
                             }
                         }
-                    },
-                    layout: {
+                    },                    layout: {
                         padding: {
-                            top: 20
+                            top: 40
+                        }
+                    },
+                    // Configuração específica para barras agrupadas
+                    elements: {
+                        bar: {
+                            borderWidth: 1
                         }
                     }
                 }

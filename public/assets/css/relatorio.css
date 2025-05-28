@@ -30,25 +30,55 @@ body {
     line-height: 1.5;
 }
 
+/* Main Content Spacing for Fixed Header */
+.main-content {
+    margin-top: 0; /* Reset - o espaçamento será no dashboard-container */
+    padding: 0;
+    min-height: 100vh;
+}
+
 /* Layout do dashboard */
 .dashboard-container {
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
+    margin-top: 160px; /* Espaço aumentado para o header fixo de duas linhas */
     background-color: var(--white);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Cabeçalho completo como na imagem original */
+/* Cabeçalho completo como na imagem original - AGORA FIXO COM GRID */
 .dashboard-header {
-    display: flex;
-    padding: 15px 20px;
+    display: grid;
+    grid-template-rows: 1fr auto; /* Duas linhas: primeira flexível, segunda automática */
+    padding: 0;
     background-color: var(--white);
     border-bottom: 1px solid var(--border-light);
+    gap: 0;
+    min-height: 120px; /* Altura mínima garantida para duas linhas */
+}
+
+/* Primeira linha do header */
+.header-main-row {
+    display: flex;
+    padding: 15px 20px;
     align-items: center;
     justify-content: space-between;
     flex-wrap: nowrap;
     gap: 20px;
+}
+
+/* Tornar o header fixo */
+.dashboard-header.fixed {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1400px;
+    z-index: 1050;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px); /* Efeito blur para melhor legibilidade */
 }
 
 .logo-container {
@@ -68,29 +98,6 @@ body {
     color: var(--dark-text);
     margin: 0;
     white-space: nowrap;
-}
-
-.header-info {
-    text-align: center;
-    flex-grow: 1;
-    min-width: 200px;
-}
-
-.update-info {
-    font-size: 0.8rem;
-    color: #666;
-    margin-bottom: 5px;
-}
-
-.update-time {
-    font-weight: bold;
-}
-
-.unit-name {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin: 0;
-    color: var(--dark-text);
 }
 
 .filters {
@@ -143,40 +150,46 @@ body {
     font-weight: 500;
 }
 
-/* Formulário de filtro */
-.filter-form {
-    padding: 10px 15px;
+/* Segunda linha do header - Seleção de Unidade */
+.header-second-row {
+    padding: 12px 20px;
     background-color: var(--light-gray);
-    border-bottom: 1px solid var(--border-light);
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 50px; /* Altura mínima para consistência */
 }
 
-.form-group {
+.unit-filter {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.form-group label {
-    font-weight: bold;
-    margin-bottom: 0;
+.unit-filter label {
+    font-size: 0.9rem;
+    font-weight: 500;
     white-space: nowrap;
 }
 
-.form-control {
-    flex: 1;
-    padding: 8px;
+.unit-select {
+    padding: 8px 12px;
     border: 1px solid var(--border-light);
     border-radius: 4px;
+    font-size: 0.9rem;
+    background-color: var(--white);
+    min-width: 250px;
 }
 
 /* ===== SISTEMA DE ABAS INFORMATIVAS PARA GRUPOS ===== */
 
 /* Container principal - layout original mantido com abas laterais */
 .services-container {
-    padding: 15px;
     padding-left: 70px; /* Espaço maior para as abas maiores */
     position: relative;
     min-height: 80vh; /* Altura mínima para caber todo o conteúdo */
+    padding-top: 50px;
 }
 
 /* Container para cada grupo com aba lateral */
@@ -261,9 +274,6 @@ body {
 }
 
 /* ===== SEÇÕES DE SERVIÇO (layout original mantido) ===== */
-.services-container {
-    padding: 15px;
-}
 
 .service-section {
     margin-bottom: 20px;
@@ -436,6 +446,8 @@ body {
 }
 
 /* ===== RESPONSIVIDADE ===== */
+
+/* Tablet responsivo */
 @media (max-width: 1200px) {
     .services-container {
         margin-left: 0;
@@ -446,37 +458,86 @@ body {
         left: -70px;
         width: 65px;
     }
+    
+    .dashboard-container {
+        margin-top: 170px; /* Pequeno ajuste para tablets */
+    }
+    
+    .header-title h1 {
+        font-size: 1.1rem; /* Reduzir título em tablets */
+    }
+    
+    .filter-item {
+        min-width: 90px; /* Reduzir largura dos filtros */
+    }
+    
+    .productivity-summary {
+        padding: 12px 20px; /* Reduzir padding */
+        min-width: 100px;
+    }
+    
+    .productivity-value {
+        font-size: 2rem; /* Reduzir tamanho da fonte */
+    }
 }
 
+/* Layout responsivo para telas médias */
 @media (max-width: 992px) {
-    .dashboard-header {
+    /* Header Responsivo - Reorganização completa */
+    .dashboard-header.fixed {
+        min-height: auto;
+        grid-template-rows: auto auto;
+    }
+    
+    .header-main-row {
         flex-direction: column;
         gap: 15px;
-        align-items: stretch;
+        align-items: center;
         padding: 15px;
     }
     
     .logo-container {
         justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
     }
     
-    .header-info {
-        order: 1;
+    .header-title h1 {
+        font-size: 1rem;
+        white-space: normal;
+        text-align: center;
+        line-height: 1.3;
     }
     
     .filters {
-        order: 2;
+        flex-direction: row;
         justify-content: center;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 15px;
+        order: 2;
+    }
+    
+    .filter-item {
+        min-width: 110px;
+        align-items: center;
     }
     
     .productivity-summary {
         order: 3;
-        align-self: center;
         min-width: auto;
+        padding: 10px 20px;
     }
     
+    .productivity-value {
+        font-size: 1.8rem;
+    }
+    
+    .dashboard-container {
+        margin-top: 200px; /* Espaço para header responsivo */
+    }
+
+    /* Conteúdo principal */
     .service-body {
         flex-direction: column;
     }
@@ -521,22 +582,102 @@ body {
     }
 }
 
+/* Mobile pequeno - Melhorias aprimoradas */
 @media (max-width: 768px) {
-    .filters {
+    /* Header responsivo para mobile */
+    .dashboard-header {
+        min-height: 180px; /* Altura otimizada para mobile */
+    }
+    
+    .dashboard-container {
+        margin-top: 190px; /* Ajuste para nova altura do header */
+    }
+    
+    .header-main-row {
         flex-direction: column;
-        align-items: center;
-        gap: 10px;
+        gap: 12px;
+        padding: 12px 15px;
+        text-align: center;
+    }
+    
+    .logo-container {
+        justify-content: center;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .logo {
+        height: 40px; /* Logo menor em mobile */
+    }
+    
+    .header-title h1 {
+        font-size: 0.95rem;
+        text-align: center;
+        line-height: 1.2;
+        margin: 0;
+    }
+    
+    .filters {
+        flex-direction: row;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
     }
     
     .filter-item {
-        min-width: 150px;
+        min-width: 120px;
         align-items: center;
+    }
+    
+    .filter-item label {
+        font-size: 0.75rem;
+        margin-bottom: 4px;
     }
     
     .filter-select {
         width: 100%;
+        padding: 6px 8px;
+        font-size: 0.85rem;
     }
     
+    .productivity-summary {
+        padding: 10px 18px;
+        min-width: auto;
+    }
+    
+    .productivity-value {
+        font-size: 1.6rem;
+    }
+    
+    .productivity-label {
+        font-size: 0.8rem;
+    }
+
+    /* Segunda linha do header em mobile */
+    .header-second-row {
+        padding: 12px 15px;
+        justify-content: center;
+    }
+    
+    .unit-filter {
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+    }
+    
+    .unit-filter label {
+        font-size: 0.85rem;
+    }
+    
+    .unit-select {
+        width: 100%;
+        max-width: 280px;
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+
+    /* Conteúdo principal em mobile */
     .service-header {
         flex-direction: column;
         align-items: flex-start;
@@ -555,13 +696,99 @@ body {
         font-size: 0.95rem;
         padding: 12px 15px;
     }
+}
+
+/* Mobile muito pequeno - Otimizações finais */
+@media (max-width: 480px) {
+    .dashboard-header {
+        min-height: 170px; /* Altura compacta para telas muito pequenas */
+    }
+    
+    .dashboard-container {
+        margin-top: 180px; /* Ajuste correspondente */
+    }
+    
+    .header-main-row {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+    
+    .logo {
+        height: 35px; /* Logo ainda menor */
+    }
+    
+    .header-title h1 {
+        font-size: 0.85rem;
+        line-height: 1.1;
+    }
+    
+    .filters {
+        gap: 8px;
+    }
+    
+    .filter-item {
+        min-width: 100px;
+    }
+    
+    .filter-item label {
+        font-size: 0.7rem;
+    }
+    
+    .filter-select {
+        padding: 5px 6px;
+        font-size: 0.8rem;
+    }
     
     .productivity-summary {
-        padding: 12px 20px;
+        padding: 8px 15px;
     }
     
     .productivity-value {
-        font-size: 1.8rem;
+        font-size: 1.4rem;
+    }
+    
+    .productivity-label {
+        font-size: 0.75rem;
+    }
+    
+    .header-second-row {
+        padding: 10px 12px;
+    }
+    
+    .unit-filter {
+        gap: 5px;
+    }
+    
+    .unit-filter label {
+        font-size: 0.8rem;
+    }
+    
+    .unit-select {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+        max-width: 250px;
+    }
+    
+    /* Melhoria para gráficos em telas muito pequenas */
+    .chart-container {
+        height: 220px; /* Reduzir altura dos gráficos */
+    }
+    
+    .gauge-container {
+        width: 160px; /* Reduzir tamanho dos gauges */
+        height: 160px;
+    }
+    
+    .gauge-value {
+        font-size: 1.4rem;
+    }
+    
+    .gauge-percent {
+        font-size: 1rem;
+    }
+    
+    .gauge-target {
+        font-size: 0.8rem;
     }
 }
 
@@ -649,4 +876,43 @@ body {
 
 .service-tabs::-webkit-scrollbar-thumb:hover {
     background: #999;
+}
+
+/* ===== OTIMIZAÇÕES FINAIS ===== */
+
+/* Melhorar performance de animações */
+.filter-select, .unit-select, .productivity-summary {
+    transition: all 0.2s ease-in-out;
+}
+
+.filter-select:focus, .unit-select:focus {
+    outline: 2px solid var(--primary-blue);
+    outline-offset: 2px;
+    border-color: var(--primary-blue);
+}
+
+/* Melhorar acessibilidade */
+.logo {
+    transition: transform 0.2s ease-in-out;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+/* Otimização para impressão */
+@media print {
+    .dashboard-header.fixed {
+        position: static !important;
+        box-shadow: none !important;
+    }
+    
+    .dashboard-container {
+        margin-top: 0 !important;
+        box-shadow: none !important;
+    }
+    
+    .filters {
+        display: none !important;
+    }
 }
