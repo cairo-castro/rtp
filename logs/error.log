@@ -460,3 +460,99 @@ Request: /.well-known/appspecific/com.chrome.devtools.json
 Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
 #1 {main}
 --------------------------------------------------------------------------------
+[2025-05-28 18:03:02] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+Request: /?mes=5&ano=2025&unidade=24
+--------------------------------------------------------------------------------
+[2025-05-28 18:03:02] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+Request: /?mes=5&ano=2025&unidade=24
+--------------------------------------------------------------------------------
+[2025-05-28 18:03:02] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+Request: /?mes=5&ano=2025&unidade=24
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php(4): ErrorHandler::handleError()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php(28): require('...')
+#2 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(48): Controller->render()
+#3 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(45): RelatorioController->index()
+#4 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#5 {main}
+--------------------------------------------------------------------------------
+[2025-05-28 18:03:04] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.100.2 Chrome/132.0.6834.210 Electron/34.5.1 Safari/537.36
+Request: /?id=f26177f4-bc01-4ee8-bec5-f1d4b450c446&vscodeBrowserReqId=1748466183546
+--------------------------------------------------------------------------------
+[2025-05-28 18:03:04] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.100.2 Chrome/132.0.6834.210 Electron/34.5.1 Safari/537.36
+Request: /?id=f26177f4-bc01-4ee8-bec5-f1d4b450c446&vscodeBrowserReqId=1748466183546
+--------------------------------------------------------------------------------
+[2025-05-28 18:03:04] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.100.2 Chrome/132.0.6834.210 Electron/34.5.1 Safari/537.36
+Request: /?id=f26177f4-bc01-4ee8-bec5-f1d4b450c446&vscodeBrowserReqId=1748466183546
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php(4): ErrorHandler::handleError()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php(28): require('...')
+#2 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(48): Controller->render()
+#3 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(45): RelatorioController->index()
+#4 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#5 {main}
+--------------------------------------------------------------------------------
+[2025-05-28 18:03:05] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+Request: /?mes=5&ano=2025&unidade=24
+--------------------------------------------------------------------------------
+[2025-05-28 18:03:05] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+Request: /?mes=5&ano=2025&unidade=24
+--------------------------------------------------------------------------------
+[2025-05-28 18:03:05] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+Request: /?mes=5&ano=2025&unidade=24
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php(4): ErrorHandler::handleError()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php(28): require('...')
+#2 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(48): Controller->render()
+#3 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(45): RelatorioController->index()
+#4 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#5 {main}
+--------------------------------------------------------------------------------
+[2025-05-28 18:03:18] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+Request: /?mes=5&ano=2025&unidade=24
+--------------------------------------------------------------------------------
+[2025-05-28 18:03:18] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+Request: /?mes=5&ano=2025&unidade=24
+--------------------------------------------------------------------------------
+[2025-05-28 18:03:18] ERROR: Undefined variable $total_pactuado
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php:4
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+Request: /?mes=5&ano=2025&unidade=24
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\dashboard.php(4): ErrorHandler::handleError()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php(28): require('...')
+#2 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(48): Controller->render()
+#3 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(45): RelatorioController->index()
+#4 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#5 {main}
+--------------------------------------------------------------------------------

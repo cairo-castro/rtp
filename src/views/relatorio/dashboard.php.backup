@@ -1,6 +1,10 @@
 
 <div class="dashboard-container">    <!-- Formulário principal -->
-    <form method="GET" id="mainForm">
+    <fo                                                <div class="gauge-info">
+                                                    <div class="gauge-value"><?php echo formatarNumero($total_pactuado); ?></div>
+                                                    <div class="gauge-percent"><?php echo formatarNumero($progresso, 2); ?>%</div>
+                                                    <div class="gauge-target"><?php echo formatarNumero($total_agendado); ?></div>
+                                                </div>thod="GET" id="mainForm">
         <!-- CABEÇALHO FIXO - usando partial -->
         <?php include __DIR__ . '/../partials/header.php'; ?>
         
@@ -76,10 +80,11 @@
                                         
                                         <div class="gauge-summary">
                                             <div class="gauge-container">
-                                                <canvas id="gauge<?php echo $indiceGrafico; ?>"></canvas>                                                <div class="gauge-info">
-                                                    <div class="gauge-value"><?php echo formatarNumero($total_pactuado); ?></div>
+                                                <canvas id="gauge<?php echo $indiceGrafico; ?>"></canvas>
+                                                <div class="gauge-info">
+                                                    <div class="gauge-value"><?php echo formatarNumero($total_executados); ?></div>
                                                     <div class="gauge-percent"><?php echo formatarNumero($progresso, 2); ?>%</div>
-                                                    <div class="gauge-target"><?php echo formatarNumero($total_agendado); ?></div>
+                                                    <div class="gauge-target"><?php echo formatarNumero($meta_pdt); ?></div>
                                                 </div>
                                             </div>                                            <div class="summary-details">
                                                 <div class="summary-item">Pactuado | Agendado</div>
