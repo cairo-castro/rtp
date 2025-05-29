@@ -40,7 +40,6 @@ body {
 /* Layout do dashboard */
 .dashboard-container {
     width: 100%;
-    max-width: 1400px;
     margin: 0 auto;
     margin-top: 160px; /* Espaço aumentado para o header fixo de duas linhas */
     background-color: var(--white);
@@ -75,7 +74,6 @@ body {
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
-    max-width: 1400px;
     z-index: 1050;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px); /* Efeito blur para melhor legibilidade */
@@ -319,7 +317,8 @@ body {
 .chart-container {
     flex: 1;
     position: relative;
-    height: 300px;
+    height: 350px;  /* Aumentado de 320px para dar mais espaço aos labels */
+    padding-bottom: 35px;  /* Aumentado de 20px para 35px para dar mais espaço aos dias da semana */
 }
 
 .chart-legend {
@@ -683,9 +682,9 @@ body {
         align-items: flex-start;
         gap: 10px;
     }
-    
-    .chart-container {
-        height: 250px;
+      .chart-container {
+        height: 280px; /* Aumentado de 250px para manter proporção */
+        padding-bottom: 30px; /* Aumentado de 15px para dar mais espaço aos dias da semana */
     }
     
     .group-tab {
@@ -768,15 +767,13 @@ body {
         font-size: 0.8rem;
         max-width: 250px;
     }
-    
-    /* Melhoria para gráficos em telas muito pequenas */
-    .chart-container {
-        height: 220px; /* Reduzir altura dos gráficos */
+      /* Melhoria para gráficos em telas muito pequenas */    .chart-container {
+        height: 270px; /* Aumentado de 240px para manter proporção */
+        padding-bottom: 25px; /* Aumentado de 15px para dar mais espaço aos dias da semana */
     }
-    
-    .gauge-container {
-        width: 160px; /* Reduzir tamanho dos gauges */
-        height: 160px;
+      .gauge-container {
+        width: 170px; /* Ajustado para manter proporção com nova configuração */
+        height: 170px;
     }
     
     .gauge-value {
@@ -802,6 +799,21 @@ body {
     font-size: 10px;
     line-height: 1.2;
     text-align: center;
+}
+
+/* Estilos específicos para ApexCharts - labels multi-linha */
+.apexcharts-xaxis-texts-g text {
+    font-size: 10px !important;
+    line-height: 1.3 !important;
+}
+
+.apexcharts-xaxis-label {
+    text-anchor: middle !important;
+}
+
+/* Garantir espaçamento adequado para labels multi-linha */
+.apexcharts-xaxis {
+    overflow: visible !important;
 }
 
 /* Aprimoramento dos gauges */
@@ -911,8 +923,61 @@ body {
         margin-top: 0 !important;
         box-shadow: none !important;
     }
-    
-    .filters {
+      .filters {
         display: none !important;
     }
+}
+
+/* Estilos para labels customizados dos dias da semana */
+.custom-day-label {
+    position: absolute !important;
+    font-size: 9px !important;
+    color: #666 !important;
+    font-weight: normal !important;
+    text-align: center !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+    font-family: Arial, sans-serif !important;
+    white-space: nowrap !important;
+    opacity: 0.9 !important;
+}
+
+/* Garantir que os containers dos gráficos tenham overflow visível para os labels */
+.chart-container {
+    overflow: visible !important;
+}
+
+.chart-container .apexcharts-canvas {
+    overflow: visible !important;
+}
+
+/* Ajustar posicionamento específico dos labels no ApexCharts */
+.apexcharts-xaxis {
+    overflow: visible !important;
+}
+
+.apexcharts-xaxis-texts-g {
+    overflow: visible !important;
+}
+
+/* Rotar os números das dataLabels para ficarem horizontais - múltiplos seletores */
+.apexcharts-datalabels text,
+.apexcharts-datalabel text,
+.apexcharts-datalabels-group text,
+.apexcharts-data-labels text {
+    transform: rotate(0deg) !important;
+    writing-mode: initial !important;
+    text-orientation: mixed !important;
+    font-size: 11px !important;
+    font-weight: normal !important;
+}
+
+/* Forçar orientação horizontal para todos os textos de dados */
+.apexcharts-canvas .apexcharts-datalabels {
+    transform: none !important;
+}
+
+.apexcharts-canvas .apexcharts-datalabels text {
+    transform: rotate(0deg) !important;
+    writing-mode: horizontal-tb !important;
 }

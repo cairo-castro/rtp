@@ -551,6 +551,91 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (error) {
             PerformanceMonitor.end(`line_chart_${elementId}`);
             console.error(`❌ Erro ao criar gráfico de linha para ${elementId}:`, error);
+        }    }    /**
+     * Adiciona linha de referência visual para valor pactuado no gauge
+     * Desenha uma linha SVG customizada para mostrar onde o pactuado se posiciona
+     * @function adicionarLinhaReferenciaPactuado
+     * @param {string} elementId - ID do elemento do gauge
+     * @param {number} progressoPactuado - Percentual do pactuado para posicionamento
+     */
+    function adicionarLinhaReferenciaPactuado(elementId, progressoPactuado) {
+        try {
+            const gaugeContainer = document.querySelector(`#${elementId}`);
+            if (!gaugeContainer) return;
+
+            // Remover linha de referência existente se houver
+            const existingLine = gaugeContainer.querySelector('.pactuado-reference-line');
+            if (existingLine) {
+                existingLine.remove();
+            }
+
+            // Encontrar o SVG do gauge
+            const svg = gaugeContainer.querySelector('svg');
+            if (!svg) return;
+
+            // Encontrar o path do gauge existente para obter dimensões reais
+            const gaugePath = svg.querySelector('.apexcharts-radialbar-track') || 
+                            svg.querySelector('.apexcharts-radialbar-area') ||
+                            svg.querySelector('path[stroke]');
+            
+            if (!gaugePath) {
+                debugLog('❌ Path do gauge não encontrado');
+                return;
+            }
+
+            // Obter dimensões do SVG
+            const svgRect = svg.getBoundingClientRect();
+            const svgWidth = svgRect.width;
+            const svgHeight = svgRect.height;
+            
+            // Centro do gauge (ApexCharts coloca o gauge no centro do SVG)
+            const centerX = svgWidth / 2;
+            const centerY = svgHeight / 2;
+            
+            // Para gauge semicircular ApexCharts: startAngle: -90, endAngle: 90 (180° total)
+            // Calcular ângulo baseado no percentual do pactuado
+            const startAngle = -90; // Ângulo inicial em graus
+            const endAngle = 90;    // Ângulo final em graus
+            const totalAngle = endAngle - startAngle; // 180°
+            
+            const targetAngle = startAngle + (progressoPactuado / 100) * totalAngle;
+            const angleRad = (targetAngle * Math.PI) / 180;
+            
+            // Calcular raios baseado no tamanho real do gauge
+            // Gauge padrão ApexCharts usa aproximadamente 40% da área disponível
+            const gaugeRadius = Math.min(svgWidth, svgHeight) * 0.35; // Raio externo
+            const innerRadius = gaugeRadius * 0.4; // Hollow size 40%
+            const outerRadius = gaugeRadius * 0.95; // Raio externo (pouco menor para ficar dentro)
+            
+            // Calcular posições da linha
+            const x1 = centerX + innerRadius * Math.cos(angleRad);
+            const y1 = centerY + innerRadius * Math.sin(angleRad);
+            const x2 = centerX + outerRadius * Math.cos(angleRad);
+            const y2 = centerY + outerRadius * Math.sin(angleRad);
+
+            // Criar elemento de linha SVG
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', '#0d6efd'); // Azul para pactuado
+            line.setAttribute('stroke-width', '4'); // Aumentado para melhor visibilidade
+            line.setAttribute('stroke-linecap', 'round'); // Pontas arredondadas para melhor visual
+            line.setAttribute('class', 'pactuado-reference-line');
+            
+            // Adicionar linha ao SVG (inserir antes dos textos para ficar atrás)
+            const firstText = svg.querySelector('text');
+            if (firstText) {
+                svg.insertBefore(line, firstText);
+            } else {
+                svg.appendChild(line);
+            }
+            
+            debugLog(`✅ Linha de referência pactuado: ${progressoPactuado}% - Ângulo: ${targetAngle.toFixed(1)}° - Coords: (${x1.toFixed(1)},${y1.toFixed(1)}) -> (${x2.toFixed(1)},${y2.toFixed(1)})`);
+            
+        } catch (error) {
+            console.error(`❌ Erro ao adicionar linha de referência para ${elementId}:`, error);
         }
     }
 
@@ -560,30 +645,40 @@ document.addEventListener("DOMContentLoaded", function () {
      * @function criarGaugeApex
      * @param {Object} dados - Dados do serviço
      * @param {string} elementId - ID do elemento
-     */
-    function criarGaugeApex(dados, elementId) {
+     */    function criarGaugeApex(dados, elementId) {
         PerformanceMonitor.start(`gauge_${elementId}`);
         
         try {
             /**
-             * Calcular progresso baseado nos dados
+             * Calcular progresso baseado nos dados e total pactuado
              * @type {number} totalExecutados - Total de procedimentos executados
              * @type {number} metaPdt - Meta de produtividade
+             * @type {number} totalPactuado - Total pactuado (soma dos dados diários)
              * @type {number} progresso - Percentual de progresso calculado
+             * @type {number} progressoPactuado - Percentual do pactuado em relação à meta
              */
             const totalExecutados = parseInt(dados.total_executados) || 0;
             const metaPdt = parseInt(dados.meta_pdt) || 0;
             const progresso = metaPdt > 0 ? Math.min(100, Math.round((totalExecutados / metaPdt) * 100)) : 0;
+            
+            // Calcular total pactuado dos dados diários
+            let totalPactuado = 0;
+            if (dados.dadosDiarios && Array.isArray(dados.dadosDiarios)) {
+                totalPactuado = dados.dadosDiarios.reduce((sum, dia) => {
+                    return sum + (parseInt(dia.pactuado) || 0);
+                }, 0);
+            }
+            const progressoPactuado = metaPdt > 0 ? Math.min(100, Math.round((totalPactuado / metaPdt) * 100)) : 0;
 
             /**
              * Usar cor do grupo se disponível
-             * @type {string} corProgresso - Cor para o gauge
+             * @type {string} corProgresso - Cor para o gauge principal (realizado)
              */
             let corProgresso = CORES_SISTEMA.progresso.fill;
             if (dados.grupo_cor && dados.grupo_cor !== '#6B7280') {
                 corProgresso = dados.grupo_cor;
             }            /**
-             * Configurações do gauge radial otimizadas
+             * Configurações do gauge radial com indicador de pactuado
              * @type {Object} opcoes - Configuração completa do gauge
              */
             const opcoes = {
@@ -603,39 +698,42 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                 },
-                series: [progresso],
+                series: [progresso], // Apenas uma série: realizado
                 plotOptions: {
                     radialBar: {
                         hollow: {
-                            size: '75%'
+                            size: '40%'  // Reduzido de 75% para 40% para gauge muito mais grosso e proeminente
                         },
                         startAngle: -90,
                         endAngle: 90,
                         track: {
                             background: CORES_SISTEMA.progresso.empty,
                             strokeWidth: '100%',
-                            margin: 5
+                            margin: 8  // Aumentado de 5 para 8 para melhor espaçamento
                         },
                         dataLabels: {
                             show: false
                         }
                     }
                 },
-                colors: [corProgresso],
+                colors: [corProgresso], // Cor principal para realizado
                 stroke: {
-                    lineCap: 'round'
+                    lineCap: 'butt' // Bordas quadradas no gauge (removido arredondamento)
                 },
-                labels: ['Progresso']
-            };
-
-            /**
+                labels: ['Realizado']
+            };            /**
              * Criar e renderizar o gauge usando chart pooling
              * @type {ApexCharts} gauge - Instância do gauge
              */
             const gauge = ChartPool.get('gauge', elementId, opcoes);
             gauge.render().then(() => {
+                // Adicionar linha de referência do pactuado após renderização
+                setTimeout(() => {
+                    adicionarLinhaReferenciaPactuado(elementId, progressoPactuado);
+                }, 200);
+                
                 PerformanceMonitor.end(`gauge_${elementId}`);
-                debugLog(`✅ Gauge ApexCharts criado para ${elementId} - ${progresso}%`);
+                debugLog(`✅ Gauge ApexCharts criado para ${elementId} - ${progresso}% (Pactuado: ${progressoPactuado}%)`);
             }).catch(error => {
                 PerformanceMonitor.end(`gauge_${elementId}`);
                 console.error(`❌ Erro ao renderizar gauge para ${elementId}:`, error);

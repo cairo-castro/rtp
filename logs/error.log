@@ -612,3 +612,123 @@ Request: /.well-known/appspecific/com.chrome.devtools.json
 Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
 #1 {main}
 --------------------------------------------------------------------------------
+[2025-05-29 12:06:55] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 12:16:30] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 12:17:12] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 12:20:05] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 12:36:47] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 12:39:59] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.100.2 Chrome/132.0.6834.210 Electron/34.5.1 Safari/537.36
+Request: /relatorio.php?unidade=14&id=1f8f8d0c-ee00-42b7-89a0-f683f5cb4754&vscodeBrowserReqId=1748533198905
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 15:15:34] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 15:16:51] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 15:21:20] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 15:26:40] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 15:29:59] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 15:39:05] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 15:44:19] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 15:45:02] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-05-29 15:49:27] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:26
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(79): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
