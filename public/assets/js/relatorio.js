@@ -48,7 +48,60 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     debugLog('🚀 ApexCharts Dashboard carregado!');
-    
+
+    /**
+     * Adiciona labels customizados para dias da semana abaixo dos números dos dias
+     * Cria elementos HTML posicionados para mostrar dia da semana abaixo de cada número
+     * @param {string} elementId - ID do elemento do gráfico
+     * @param {Array} diasSemana - Array com os dias da semana correspondentes
+     */
+    function adicionarLabelsCustomizados(elementId, diasSemana) {
+        try {
+            const chartContainer = document.querySelector(`#${elementId}`);
+            if (!chartContainer) return;
+
+            // Remover labels customizados existentes
+            const existingLabels = chartContainer.querySelectorAll('.custom-day-label');
+            existingLabels.forEach(label => label.remove());
+
+            // Encontrar os labels do eixo X
+            const xAxisLabels = chartContainer.querySelectorAll('.apexcharts-xaxis-texts-g text');
+            
+            xAxisLabels.forEach((label, index) => {
+                if (index < diasSemana.length && diasSemana[index]) {
+                    const rect = label.getBoundingClientRect();
+                    const containerRect = chartContainer.getBoundingClientRect();                    // Calcular posição relativa ao container
+                    const left = rect.left - containerRect.left + (rect.width / 2);
+                    const top = rect.bottom - containerRect.top + 6; // Reduzido de 15px para 8px para aproximar data e dia
+                    
+                    // Criar elemento para o dia da semana
+                    const dayLabel = document.createElement('div');
+                    dayLabel.className = 'custom-day-label';
+                    dayLabel.textContent = diasSemana[index];
+                    dayLabel.style.cssText = `
+                        position: absolute;
+                        left: ${left}px;
+                        top: ${top}px;
+                        transform: translateX(-50%);
+                        font-size: 11px; // Aumentado de 9px para 11px para melhor legibilidade
+                        color: #666;
+                        font-weight: normal;
+                        text-align: center;
+                        pointer-events: none;
+                        z-index: 10;
+                    `;
+                    
+                    chartContainer.style.position = 'relative';
+                    chartContainer.appendChild(dayLabel);
+                }
+            });
+            
+            debugLog(`✅ Labels customizados adicionados para ${elementId}`, diasSemana);
+        } catch (error) {
+            console.error(`❌ Erro ao adicionar labels customizados para ${elementId}:`, error);
+        }
+    }
+
     /**
      * Verificação de dependências - ApexCharts deve estar disponível
      * Garante que a biblioteca foi carregada antes de prosseguir
@@ -109,12 +162,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 enabled: false // Desabilitar zoom para melhor performance
             },
             background: 'transparent'
-        },
-        legend: {
+        },        legend: {
             position: 'top',
             horizontalAlign: 'center',
             floating: false,
-            offsetY: -10,
+            offsetY: -5, // Reduzido de -10 para -5 para menos espaço
             offsetX: 0,
             markers: {
                 width: 12,
@@ -124,7 +176,7 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             itemMargin: {
                 horizontal: 15,
-                vertical: 8
+                vertical: 5 // Reduzido de 8 para 5 para compactar verticalmente
             },
             fontSize: '11px',
             fontWeight: 500
@@ -141,10 +193,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 lines: {
                     show: true
                 }
-            },
-            padding: {
-                top: 40,    // Espaço significativo entre legenda e gráfico
-                bottom: 10,
+            },            padding: {
+                top: 20,    // Reduzido de 40 para 20 para menos espaço entre legenda e gráfico
+                bottom: 40,  // Aumentado de 25 para 40 para dar mais espaço aos labels dos dias da semana
                 left: 10,
                 right: 10
             }
@@ -259,11 +310,15 @@ document.addEventListener("DOMContentLoaded", function () {
         try {            /**
              * Preparação e validação dos dados de entrada
              * Garante que os dados estão no formato correto
-             * @type {Array} dadosDiarios - Array com dados diários do serviço             * @type {Array} categorias - Array com rótulos dos dias para o eixo X (dia da semana embaixo do número)
+             * @type {Array} dadosDiarios - Array com dados diários do serviço             * @type {Array} categorias - Array com rótulos dos dias para o eixo X (apenas números)
+             * @type {Array} diasSemana - Array com dias da semana para dataLabels customizados
              */
             const dadosDiarios = dados.dadosDiarios || [];
-            // Criar categorias com quebra de linha HTML para garantir formatação vertical
-            const categorias = dadosDiarios.map(d => `${d.dia}<br/>${d.dia_semana || ''}`);
+            // Criar categorias apenas com números dos dias para o eixo X
+            const categorias = dadosDiarios.map(d => d.dia);
+            
+            // Separar dados para dataLabels customizados de dias da semana
+            const diasSemana = dadosDiarios.map(d => d.dia_semana || '');
             
             /**
              * Configuração das séries de dados para o gráfico
@@ -286,9 +341,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     data: dadosDiarios.map(d => parseInt(d.realizado) || 0),
                     color: CORES_SISTEMA.realizado
                 }
-            ];
-
-            /**
+            ];            /**
              * Cálculo do valor máximo para otimização do espaçamento
              * Adiciona margem superior para melhor visualização
              * @type {Array} todosValores - Todos os valores das séries combinados
@@ -297,16 +350,13 @@ document.addEventListener("DOMContentLoaded", function () {
              */
             const todosValores = seriesDados.flatMap(serie => serie.data);
             const valorMaximo = Math.max(...todosValores);
-            const maxComEspaco = valorMaximo + 30;            /**
-             * Configurações específicas do gráfico de barras com otimizações máximas
-             * @type {Object} opcoes - Objeto de configuração completo do ApexCharts
-             */
+            const maxComEspaco = valorMaximo + Math.ceil(valorMaximo * 0.1); // +10% do valor máximo (padrão ApexCharts)
+
             const opcoes = {
-                ...CONFIGURACOES_GLOBAIS,
-                chart: {
+                ...CONFIGURACOES_GLOBAIS,                chart: {
                     ...CONFIGURACOES_GLOBAIS.chart,
                     type: 'bar',
-                    height: 350,
+                    height: 380, // Aumentado de 350 para 380 para aproveitar o espaço economizado
                     id: elementId,
                     // Otimizações de performance máximas
                     parentHeightOffset: 0,
@@ -315,50 +365,45 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     group: 'charts' // Agrupar para melhor gerenciamento
                 },
-                series: seriesDados,
-                plotOptions: {
+                series: seriesDados,                plotOptions: {
                     bar: {
                         horizontal: false,
                         columnWidth: '75%',
-                        borderRadius: 3,
+                        borderRadius: 0, // Bordas quadradas (removido arredondamento)
                         dataLabels: {
                             position: 'top'
                         }
                     }
-                },
-                dataLabels: {
+                },                dataLabels: {
                     enabled: true,
-                    offsetY: -8,
+                    offsetY: -20, // Aumentado de -15 para -20 para ainda mais espaço entre barras e números
                     style: {
-                        fontSize: '9px',
-                        fontWeight: 'bold',
+                        fontSize: '8px', // Reduzido de 11px para 10px para evitar sobreposição
+                        fontWeight: 'normal', // Mudado de 'bold' para 'normal' para números não em negrito
                         colors: ['#333']
                     },
+                    textAnchor: 'middle',
+                    distributed: false,
                     formatter: function(value) {
                         return value > 0 ? value : '';
                     }
-                },                xaxis: {
-                    categories: categorias,                    labels: {
+                },
+                xaxis: {
+                    categories: categorias,
+                    labels: {
                         style: {
                             fontSize: '10px'
-                        },                        maxHeight: 60,
+                        },
+                        maxHeight: 100,  // Aumentado de 80 para 100 para garantir espaço para labels multi-linha
                         trim: false,
                         rotate: 0, // Forçar rotação 0 para melhor performance
                         formatter: function(value, timestamp, opts) {
-                            // Formatação para multi-linha com HTML
-                            if (typeof value === 'string' && value.includes('<br/>')) {
-                                // Retorna valor com HTML para renderização multi-linha
-                                return value;
-                            }
-                            if (Array.isArray(value)) {
-                                // Se é array, juntar com <br/>
-                                return value.join('<br/>');
-                            }
-                            if (typeof value === 'string' && value.includes('\n')) {
-                                const parts = value.split('\n');
-                                return parts.join('<br/>');
-                            }
-                            return value;
+                            // Obter índice do valor atual
+                            const index = opts ? opts.dataPointIndex : categorias.indexOf(String(value));
+                            const diaSemana = diasSemana[index] || '';
+                            
+                            // Retornar com quebra de linha usando \n
+                            return `${value}\n${diaSemana}`;
                         },
                         // Configurações específicas para multi-linha
                         offsetY: 0,
@@ -378,6 +423,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 yaxis: {
                     min: 0,
                     max: maxComEspaco,
+                    tickAmount: 5,  // Padrão ApexCharts com menos linhas
                     labels: {
                         style: {
                             fontSize: '10px'
@@ -404,14 +450,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 stroke: {
                     show: false // Desabilitar bordas para melhor performance
                 }
-            };
-
-            /**
+            };            /**
              * Criar e renderizar o gráfico de barras usando chart pooling
              * @type {ApexCharts} chart - Instância do gráfico ApexCharts
              */
-            const chart = ChartPool.get('bar', elementId, opcoes);
-            chart.render().then(() => {
+            const chart = ChartPool.get('bar', elementId, opcoes);            chart.render().then(() => {
+                // Adicionar labels customizados para dias da semana após a renderização
+                setTimeout(() => {
+                    adicionarLabelsCustomizados(elementId, diasSemana);
+                }, 100);
+                
                 PerformanceMonitor.end(`chart_${elementId}`);
                 debugLog(`✅ Gráfico de barras ApexCharts criado para ${elementId}`);
             }).catch(error => {
@@ -439,14 +487,18 @@ document.addEventListener("DOMContentLoaded", function () {
      */
     function criarGraficoLinha(dados, elementId) {
         PerformanceMonitor.start(`line_chart_${elementId}`);
-        
-        try {            /**
+          try {            /**
              * Preparação dos dados para gráfico de linha
-             * @type {Array} dadosDiarios - Dados diários do serviço             * @type {Array} categorias - Categorias para o eixo X (dia da semana embaixo do número)
+             * @type {Array} dadosDiarios - Dados diários do serviço
+             * @type {Array} categorias - Categorias para o eixo X (apenas números dos dias)
+             * @type {Array} diasSemana - Array com dias da semana para dataLabels customizados
              */
             const dadosDiarios = dados.dadosDiarios || [];
-            // Criar categorias com quebra de linha HTML para garantir formatação vertical
-            const categorias = dadosDiarios.map(d => `${d.dia}<br/>${d.dia_semana || ''}`);
+            // Criar categorias apenas com números dos dias para o eixo X
+            const categorias = dadosDiarios.map(d => d.dia);
+            
+            // Separar dados para dataLabels customizados de dias da semana
+            const diasSemana = dadosDiarios.map(d => d.dia_semana || '');
             
             /**
              * Configuração das séries para gráfico de linha
@@ -475,11 +527,10 @@ document.addEventListener("DOMContentLoaded", function () {
              * @type {Object} opcoes - Configuração completa para gráfico de linha
              */
             const opcoes = {
-                ...CONFIGURACOES_GLOBAIS,
-                chart: {
+                ...CONFIGURACOES_GLOBAIS,                chart: {
                     ...CONFIGURACOES_GLOBAIS.chart,
                     type: 'line',
-                    height: 350,
+                    height: 380, // Aumentado de 350 para 380 para aproveitar o espaço economizado
                     id: elementId
                 },
                 series: seriesDados,
@@ -493,31 +544,28 @@ document.addEventListener("DOMContentLoaded", function () {
                         size: 6
                     }
                 },                xaxis: {
-                    categories: categorias,                    labels: {                        style: {
+                    categories: categorias,
+                    labels: {
+                        style: {
                             fontSize: '10px'
                         },
+                        maxHeight: 100,  // Aumentado de 80 para 100 para garantir espaço para labels multi-linha
+                        trim: false,
+                        rotate: 0, // Forçar rotação 0 para que labels fiquem verticais
                         formatter: function(value, timestamp, opts) {
-                            // Formatação para multi-linha com HTML
-                            if (typeof value === 'string' && value.includes('<br/>')) {
-                                // Retorna valor com HTML para renderização multi-linha
-                                return value;
-                            }
-                            if (Array.isArray(value)) {
-                                // Se é array, juntar com <br/>
-                                return value.join('<br/>');
-                            }
-                            if (typeof value === 'string' && value.includes('\n')) {
-                                const parts = value.split('\n');
-                                return parts.join('<br/>');
-                            }
-                            return value;
+                            // Obter índice do valor atual
+                            const index = opts ? opts.dataPointIndex : categorias.indexOf(String(value));
+                            const diaSemana = diasSemana[index] || '';
+                            
+                            // Retornar com quebra de linha usando \n
+                            return `${value}\n${diaSemana}`;
                         },
                         // Configurações específicas para multi-linha
                         offsetY: 0,
                         hideOverlappingLabels: false
                     }
-                },
-                yaxis: {
+                },yaxis: {
+                    tickAmount: 6,  // Reduzir número de linhas do grid para padrão ApexCharts
                     labels: {
                         style: {
                             fontSize: '10px'
@@ -536,14 +584,17 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                 }
-            };
-
-            /**
+            };            /**
              * Criar e renderizar o gráfico de linha
              * @type {ApexCharts} lineChart - Instância do gráfico de linha
              */
             const lineChart = new ApexCharts(document.querySelector(`#${elementId}`), opcoes);
             lineChart.render().then(() => {
+                // Adicionar labels customizados para dias da semana após a renderização
+                setTimeout(() => {
+                    adicionarLabelsCustomizados(elementId, diasSemana);
+                }, 100);
+                
                 PerformanceMonitor.end(`line_chart_${elementId}`);
                 debugLog(`✅ Gráfico de linha ApexCharts criado para ${elementId}`);
             });
@@ -551,93 +602,47 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (error) {
             PerformanceMonitor.end(`line_chart_${elementId}`);
             console.error(`❌ Erro ao criar gráfico de linha para ${elementId}:`, error);
-        }    }    /**
-     * Adiciona linha de referência visual para valor pactuado no gauge
-     * Desenha uma linha SVG customizada para mostrar onde o pactuado se posiciona
-     * @function adicionarLinhaReferenciaPactuado
-     * @param {string} elementId - ID do elemento do gauge
-     * @param {number} progressoPactuado - Percentual do pactuado para posicionamento
-     */
-    function adicionarLinhaReferenciaPactuado(elementId, progressoPactuado) {
-        try {
-            const gaugeContainer = document.querySelector(`#${elementId}`);
-            if (!gaugeContainer) return;
+        }    }        // Note: Line reference function removed - replaced by concentric gauge design
 
-            // Remover linha de referência existente se houver
-            const existingLine = gaugeContainer.querySelector('.pactuado-reference-line');
-            if (existingLine) {
-                existingLine.remove();
-            }
-
-            // Encontrar o SVG do gauge
-            const svg = gaugeContainer.querySelector('svg');
-            if (!svg) return;
-
-            // Encontrar o path do gauge existente para obter dimensões reais
-            const gaugePath = svg.querySelector('.apexcharts-radialbar-track') || 
-                            svg.querySelector('.apexcharts-radialbar-area') ||
-                            svg.querySelector('path[stroke]');
-            
-            if (!gaugePath) {
-                debugLog('❌ Path do gauge não encontrado');
-                return;
-            }
-
-            // Obter dimensões do SVG
-            const svgRect = svg.getBoundingClientRect();
-            const svgWidth = svgRect.width;
-            const svgHeight = svgRect.height;
-            
-            // Centro do gauge (ApexCharts coloca o gauge no centro do SVG)
-            const centerX = svgWidth / 2;
-            const centerY = svgHeight / 2;
-            
-            // Para gauge semicircular ApexCharts: startAngle: -90, endAngle: 90 (180° total)
-            // Calcular ângulo baseado no percentual do pactuado
-            const startAngle = -90; // Ângulo inicial em graus
-            const endAngle = 90;    // Ângulo final em graus
-            const totalAngle = endAngle - startAngle; // 180°
-            
-            const targetAngle = startAngle + (progressoPactuado / 100) * totalAngle;
-            const angleRad = (targetAngle * Math.PI) / 180;
-            
-            // Calcular raios baseado no tamanho real do gauge
-            // Gauge padrão ApexCharts usa aproximadamente 40% da área disponível
-            const gaugeRadius = Math.min(svgWidth, svgHeight) * 0.35; // Raio externo
-            const innerRadius = gaugeRadius * 0.4; // Hollow size 40%
-            const outerRadius = gaugeRadius * 0.95; // Raio externo (pouco menor para ficar dentro)
-            
-            // Calcular posições da linha
-            const x1 = centerX + innerRadius * Math.cos(angleRad);
-            const y1 = centerY + innerRadius * Math.sin(angleRad);
-            const x2 = centerX + outerRadius * Math.cos(angleRad);
-            const y2 = centerY + outerRadius * Math.sin(angleRad);
-
-            // Criar elemento de linha SVG
-            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            line.setAttribute('x1', x1);
-            line.setAttribute('y1', y1);
-            line.setAttribute('x2', x2);
-            line.setAttribute('y2', y2);
-            line.setAttribute('stroke', '#0d6efd'); // Azul para pactuado
-            line.setAttribute('stroke-width', '4'); // Aumentado para melhor visibilidade
-            line.setAttribute('stroke-linecap', 'round'); // Pontas arredondadas para melhor visual
-            line.setAttribute('class', 'pactuado-reference-line');
-            
-            // Adicionar linha ao SVG (inserir antes dos textos para ficar atrás)
-            const firstText = svg.querySelector('text');
-            if (firstText) {
-                svg.insertBefore(line, firstText);
-            } else {
-                svg.appendChild(line);
-            }
-            
-            debugLog(`✅ Linha de referência pactuado: ${progressoPactuado}% - Ângulo: ${targetAngle.toFixed(1)}° - Coords: (${x1.toFixed(1)},${y1.toFixed(1)}) -> (${x2.toFixed(1)},${y2.toFixed(1)})`);
-            
-        } catch (error) {
-            console.error(`❌ Erro ao adicionar linha de referência para ${elementId}:`, error);
-        }
+/**
+ * Versão de debug para inspecionar a estrutura do SVG
+ * Use esta para ver exatamente como está estruturado o seu gauge
+ */
+function debugGaugeStructure(elementId) {
+    const container = document.querySelector(`#${elementId}`);
+    if (!container) {
+        console.log('Container não encontrado');
+        return;
     }
+
+    const svg = container.querySelector('svg');
+    if (!svg) {
+        console.log('SVG não encontrado');
+        return;
+    }
+
+    console.log('🔍 ESTRUTURA DO GAUGE:');
+    console.log('SVG:', svg);
+    console.log('Classes do SVG:', svg.className);
+    
+    const allGroups = svg.querySelectorAll('g');
+    console.log(`Grupos encontrados: ${allGroups.length}`);
+    
+    allGroups.forEach((group, index) => {
+        console.log(`Grupo ${index}:`, group.className.baseVal || group.getAttribute('class') || 'sem classe');
+    });
+
+    const allPaths = svg.querySelectorAll('path');
+    console.log(`Paths encontrados: ${allPaths.length}`);
+    
+    allPaths.forEach((path, index) => {
+        const d = path.getAttribute('d');
+        console.log(`Path ${index}:`, d ? d.substring(0, 50) + '...' : 'sem d');
+        console.log(`  - stroke: ${path.getAttribute('stroke')}`);
+        console.log(`  - fill: ${path.getAttribute('fill')}`);
+        console.log(`  - class: ${path.getAttribute('class')}`);
+    });
+}
 
     /**
      * Cria um gauge (gráfico radial) usando ApexCharts
@@ -645,220 +650,326 @@ document.addEventListener("DOMContentLoaded", function () {
      * @function criarGaugeApex
      * @param {Object} dados - Dados do serviço
      * @param {string} elementId - ID do elemento
-     */    function criarGaugeApex(dados, elementId) {
-        PerformanceMonitor.start(`gauge_${elementId}`);
+     */     function criarGaugeApex(dados, elementId) {
+    PerformanceMonitor.start(`gauge_${elementId}`);
+    
+    try {
+        // Calcular progresso realizado baseado nos dados
+        const totalExecutados = parseInt(dados.total_executados) || 0;
+        const metaPdt = parseInt(dados.meta_pdt) || 0;
+        const progressoRealizado = metaPdt > 0 ? Math.min(100, Math.round((totalExecutados / metaPdt) * 100)) : 0;
+        
+        // Calcular progresso pactuado baseado nos dados diários
+        let totalPactuado = 0;
+        if (dados.dadosDiarios && Array.isArray(dados.dadosDiarios)) {
+            totalPactuado = dados.dadosDiarios.reduce((sum, dia) => {
+                return sum + (parseInt(dia.pactuado) || 0);
+            }, 0);
+        }
+        
+        const progressoPactuado = metaPdt > 0 ? Math.min(100, Math.round((totalPactuado / metaPdt) * 100)) : 0;
+        
+        // Debug para ver os valores
+        console.log(`🔢 GAUGE CONCÊNTRICO PARA ${elementId}:`);
+        console.log(`   📊 Realizado: ${totalExecutados} (${progressoRealizado}%)`);
+        console.log(`   📋 Pactuado: ${totalPactuado} (${progressoPactuado}%)`);
+        console.log(`   🎯 Meta PDT: ${metaPdt}`);
+
+        // Usar cor do grupo se disponível
+        let corRealizado = CORES_SISTEMA.realizado; // Laranja para realizado
+        if (dados.grupo_cor && dados.grupo_cor !== '#6B7280') {
+            corRealizado = dados.grupo_cor;
+        }        // GAUGE CONCÊNTRICO: Duas séries sobrepostas
+        const opcoes = {
+            chart: {
+                type: 'radialBar',
+                height: 200,
+                id: `${elementId}-gauge`,
+                sparkline: {
+                    enabled: true
+                },
+                animations: {
+                    enabled: CONFIGURACOES_GLOBAIS.chart.animations.enabled,
+                    speed: 400,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    }
+                }
+            },
+            series: [progressoRealizado, progressoPactuado], // Duas séries: realizado (externo) e pactuado (interno)
+            plotOptions: {
+                radialBar: {
+                    hollow: {
+                        size: '30%', // Menor para acomodar duas séries
+                        margin: 15
+                    },
+                    startAngle: -90,
+                    endAngle: 90,
+                    track: {
+                        background: CORES_SISTEMA.progresso.empty,
+                        strokeWidth: '100%',
+                        margin: 2 // Pequeno espaço entre as séries
+                    },
+                    dataLabels: {
+                        name: {
+                            show: false
+                        },
+                        value: {
+                            show: false
+                        },
+                        total: {
+                            show: true,
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                            color: '#333',
+                            formatter: function (w) {
+                                return totalExecutados.toString();
+                            }
+                        }
+                    }
+                }
+            },
+            colors: [corRealizado, CORES_SISTEMA.pactuado], // Laranja (realizado) e azul (pactuado)
+            stroke: {
+                lineCap: 'round',
+                strokeWidth: [12, 8] // Série externa mais grossa, interna mais fina
+            },
+            labels: ['Realizado', 'Pactuado'],
+            tooltip: {
+                enabled: true,
+                theme: 'light',
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Arial, sans-serif'
+                },
+                fillSeriesColor: false,
+                custom: function({ series, seriesIndex, dataPointIndex, w }) {
+                    const isRealizado = seriesIndex === 0;
+                    const valor = series[seriesIndex];
+                    const tipo = isRealizado ? 'Realizado' : 'Pactuado';
+                    const total = isRealizado ? totalExecutados : totalPactuado;
+                    const cor = isRealizado ? corRealizado : CORES_SISTEMA.pactuado;
+                    
+                    return `
+                        <div style="padding: 8px 12px; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                            <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                                <div style="width: 12px; height: 12px; background: ${cor}; border-radius: 2px; margin-right: 6px;"></div>
+                                <strong style="color: #333; font-size: 13px;">${tipo}</strong>
+                            </div>
+                            <div style="color: #666; font-size: 12px; margin-bottom: 2px;">
+                                Valor: <strong style="color: #333;">${total.toLocaleString('pt-BR')} procedimentos</strong>
+                            </div>
+                            <div style="color: #666; font-size: 12px; margin-bottom: 2px;">
+                                Progresso: <strong style="color: #333;">${valor.toFixed(1)}%</strong>
+                            </div>
+                            <div style="color: #666; font-size: 12px;">
+                                Meta: <strong style="color: #333;">${metaPdt.toLocaleString('pt-BR')} procedimentos</strong>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        };
+
+        // Criar e renderizar o gauge concêntrico
+        const gauge = ChartPool.get('gauge', elementId, opcoes);
+        gauge.render().then(() => {
+            // Adicionar informações customizadas após renderização
+            setTimeout(() => {
+                adicionarInformacoesGauge(elementId, {
+                    percentualRealizado: progressoRealizado,
+                    percentualPactuado: progressoPactuado,
+                    totalExecutados: totalExecutados,
+                    totalPactuado: totalPactuado,
+                    metaPdt: metaPdt
+                });
+            }, 300);
+            
+            PerformanceMonitor.end(`gauge_${elementId}`);
+            debugLog(`✅ Gauge concêntrico criado para ${elementId} - Realizado: ${progressoRealizado}%, Pactuado: ${progressoPactuado}%`);
+        }).catch(error => {
+            PerformanceMonitor.end(`gauge_${elementId}`);
+            console.error(`❌ Erro ao renderizar gauge para ${elementId}:`, error);
+        });
+
+    } catch (error) {
+        PerformanceMonitor.end(`gauge_${elementId}`);
+        console.error(`❌ Erro ao criar gauge ApexCharts para ${elementId}:`, error);
+    }
+}
+
+/**
+ * Adiciona informações customizadas ao gauge concêntrico
+ * Mantém apenas valores nas extremidades (0 e meta) - legends e percentual removidos
+ */
+function adicionarInformacoesGauge(elementId, dados) {
+    try {
+        console.log(`📋 Adicionando informações simplificadas para ${elementId}`);
+        
+        const container = document.querySelector(`#${elementId}`);
+        if (!container) {
+            console.log(`❌ Container #${elementId} não encontrado`);
+            return;
+        }
+
+        // Remover informações anteriores se existirem
+        container.querySelectorAll('.gauge-custom-info').forEach(el => el.remove());
+
+        // Posicionar container como relativo
+        container.style.position = 'relative';
+
+        // 1. Número na extremidade esquerda (0)
+        const leftNumber = document.createElement('div');
+        leftNumber.className = 'gauge-custom-info';
+        leftNumber.style.cssText = `
+            position: absolute;
+            bottom: 45px;
+            left: 35px;
+            font-size: 12px;
+            color: #999;
+            font-weight: normal;
+        `;
+        leftNumber.innerHTML = '0';
+
+        // 2. Número na extremidade direita (meta)
+        const rightNumber = document.createElement('div');
+        rightNumber.className = 'gauge-custom-info';
+        rightNumber.style.cssText = `
+            position: absolute;
+            bottom: 45px;
+            right: 35px;
+            font-size: 12px;
+            color: #999;
+            font-weight: normal;
+        `;
+        rightNumber.innerHTML = dados.metaPdt.toString();
+
+        // Adicionar apenas os números das extremidades ao container
+        container.appendChild(leftNumber);
+        container.appendChild(rightNumber);
+
+        console.log(`✅ Informações simplificadas adicionadas para ${elementId} (apenas extremidades: 0 e ${dados.metaPdt})`);
+
+    } catch (error) {
+        console.error(`❌ Erro ao adicionar informações customizadas:`, error);
+    }
+}
+
+/**
+ * Sistema de cache para dados dos gráficos
+ * @constant {Object} CACHE_CONFIG - Configurações do sistema de cache
+ */
+const CACHE_CONFIG = {
+    enabled: true,
+    duration: 5 * 60 * 1000, // 5 minutos em millisegundos
+    keyPrefix: 'rtp_chart_data_'
+};
+
+/**
+ * Cache manager para dados dos gráficos
+ * Gerencia armazenamento local de dados para melhor performance
+ * @namespace CacheManager
+ */
+const CacheManager = {
+    /**
+     * Salva dados no cache local
+     * @function set
+     * @param {string} key - Chave identificadora
+     * @param {*} data - Dados a serem salvos
+     * @returns {boolean} - Sucesso da operação
+     */
+    set: function(key, data) {
+        if (!CACHE_CONFIG.enabled || !window.localStorage) return false;
         
         try {
-            /**
-             * Calcular progresso baseado nos dados e total pactuado
-             * @type {number} totalExecutados - Total de procedimentos executados
-             * @type {number} metaPdt - Meta de produtividade
-             * @type {number} totalPactuado - Total pactuado (soma dos dados diários)
-             * @type {number} progresso - Percentual de progresso calculado
-             * @type {number} progressoPactuado - Percentual do pactuado em relação à meta
-             */
-            const totalExecutados = parseInt(dados.total_executados) || 0;
-            const metaPdt = parseInt(dados.meta_pdt) || 0;
-            const progresso = metaPdt > 0 ? Math.min(100, Math.round((totalExecutados / metaPdt) * 100)) : 0;
+            const cacheData = {
+                data: data,
+                timestamp: Date.now(),
+                expires: Date.now() + CACHE_CONFIG.duration
+            };
             
-            // Calcular total pactuado dos dados diários
-            let totalPactuado = 0;
-            if (dados.dadosDiarios && Array.isArray(dados.dadosDiarios)) {
-                totalPactuado = dados.dadosDiarios.reduce((sum, dia) => {
-                    return sum + (parseInt(dia.pactuado) || 0);
-                }, 0);
-            }
-            const progressoPactuado = metaPdt > 0 ? Math.min(100, Math.round((totalPactuado / metaPdt) * 100)) : 0;
-
-            /**
-             * Usar cor do grupo se disponível
-             * @type {string} corProgresso - Cor para o gauge principal (realizado)
-             */
-            let corProgresso = CORES_SISTEMA.progresso.fill;
-            if (dados.grupo_cor && dados.grupo_cor !== '#6B7280') {
-                corProgresso = dados.grupo_cor;
-            }            /**
-             * Configurações do gauge radial com indicador de pactuado
-             * @type {Object} opcoes - Configuração completa do gauge
-             */
-            const opcoes = {
-                chart: {
-                    type: 'radialBar',
-                    height: 200,
-                    id: `${elementId}-gauge`,
-                    // Otimizações específicas para gauge
-                    sparkline: {
-                        enabled: true // Gauges se beneficiam do sparkline
-                    },
-                    animations: {
-                        enabled: CONFIGURACOES_GLOBAIS.chart.animations.enabled,
-                        speed: 300, // Mais rápido para gauges
-                        animateGradually: {
-                            enabled: false // Desabilitar animação gradual para melhor performance
-                        }
-                    }
-                },
-                series: [progresso], // Apenas uma série: realizado
-                plotOptions: {
-                    radialBar: {
-                        hollow: {
-                            size: '40%'  // Reduzido de 75% para 40% para gauge muito mais grosso e proeminente
-                        },
-                        startAngle: -90,
-                        endAngle: 90,
-                        track: {
-                            background: CORES_SISTEMA.progresso.empty,
-                            strokeWidth: '100%',
-                            margin: 8  // Aumentado de 5 para 8 para melhor espaçamento
-                        },
-                        dataLabels: {
-                            show: false
-                        }
-                    }
-                },
-                colors: [corProgresso], // Cor principal para realizado
-                stroke: {
-                    lineCap: 'butt' // Bordas quadradas no gauge (removido arredondamento)
-                },
-                labels: ['Realizado']
-            };            /**
-             * Criar e renderizar o gauge usando chart pooling
-             * @type {ApexCharts} gauge - Instância do gauge
-             */
-            const gauge = ChartPool.get('gauge', elementId, opcoes);
-            gauge.render().then(() => {
-                // Adicionar linha de referência do pactuado após renderização
-                setTimeout(() => {
-                    adicionarLinhaReferenciaPactuado(elementId, progressoPactuado);
-                }, 200);
-                
-                PerformanceMonitor.end(`gauge_${elementId}`);
-                debugLog(`✅ Gauge ApexCharts criado para ${elementId} - ${progresso}% (Pactuado: ${progressoPactuado}%)`);
-            }).catch(error => {
-                PerformanceMonitor.end(`gauge_${elementId}`);
-                console.error(`❌ Erro ao renderizar gauge para ${elementId}:`, error);
-            });
-
+            localStorage.setItem(CACHE_CONFIG.keyPrefix + key, JSON.stringify(cacheData));
+            debugLog('💾 Dados salvos no cache:', key);
+            return true;
         } catch (error) {
-            PerformanceMonitor.end(`gauge_${elementId}`);
-            console.error(`❌ Erro ao criar gauge ApexCharts para ${elementId}:`, error);
+            console.warn('Erro ao salvar no cache:', error);
+            return false;
         }
-    }
+    },
 
     /**
-     * Sistema de cache para dados dos gráficos
-     * @constant {Object} CACHE_CONFIG - Configurações do sistema de cache
+     * Recupera dados do cache local
+     * @function get
+     * @param {string} key - Chave identificadora
+     * @returns {*|null} - Dados recuperados ou null se não encontrado/expirado
      */
-    const CACHE_CONFIG = {
-        enabled: true,
-        duration: 5 * 60 * 1000, // 5 minutos em millisegundos
-        keyPrefix: 'rtp_chart_data_'
-    };
-
-    /**
-     * Cache manager para dados dos gráficos
-     * Gerencia armazenamento local de dados para melhor performance
-     * @namespace CacheManager
-     */
-    const CacheManager = {
-        /**
-         * Salva dados no cache local
-         * @function set
-         * @param {string} key - Chave identificadora
-         * @param {*} data - Dados a serem salvos
-         * @returns {boolean} - Sucesso da operação
-         */
-        set: function(key, data) {
-            if (!CACHE_CONFIG.enabled || !window.localStorage) return false;
+    get: function(key) {
+        if (!CACHE_CONFIG.enabled || !window.localStorage) return null;
+        
+        try {
+            const cached = localStorage.getItem(CACHE_CONFIG.keyPrefix + key);
+            if (!cached) return null;
             
-            try {
-                const cacheData = {
-                    data: data,
-                    timestamp: Date.now(),
-                    expires: Date.now() + CACHE_CONFIG.duration
-                };
-                
-                localStorage.setItem(CACHE_CONFIG.keyPrefix + key, JSON.stringify(cacheData));
-                debugLog('💾 Dados salvos no cache:', key);
-                return true;
-            } catch (error) {
-                console.warn('Erro ao salvar no cache:', error);
-                return false;
-            }
-        },
-
-        /**
-         * Recupera dados do cache local
-         * @function get
-         * @param {string} key - Chave identificadora
-         * @returns {*|null} - Dados recuperados ou null se não encontrado/expirado
-         */
-        get: function(key) {
-            if (!CACHE_CONFIG.enabled || !window.localStorage) return null;
+            const cacheData = JSON.parse(cached);
             
-            try {
-                const cached = localStorage.getItem(CACHE_CONFIG.keyPrefix + key);
-                if (!cached) return null;
-                
-                const cacheData = JSON.parse(cached);
-                
-                // Verificar se o cache expirou
-                if (Date.now() > cacheData.expires) {
-                    this.remove(key);
-                    debugLog('⏰ Cache expirado removido:', key);
-                    return null;
-                }
-                
-                debugLog('✅ Dados recuperados do cache:', key);
-                return cacheData.data;
-            } catch (error) {
-                console.warn('Erro ao ler do cache:', error);
+            // Verificar se o cache expirou
+            if (Date.now() > cacheData.expires) {
                 this.remove(key);
+                debugLog('⏰ Cache expirado removido:', key);
                 return null;
             }
-        },
-
-        /**
-         * Remove item específico do cache
-         * @function remove
-         * @param {string} key - Chave do item a ser removido
-         */
-        remove: function(key) {
-            if (window.localStorage) {
-                localStorage.removeItem(CACHE_CONFIG.keyPrefix + key);
-            }
-        },
-
-        /**
-         * Limpa todo o cache do sistema
-         * @function clear
-         */
-        clear: function() {
-            if (!window.localStorage) return;
             
-            const keys = Object.keys(localStorage);
-            keys.forEach(key => {
-                if (key.startsWith(CACHE_CONFIG.keyPrefix)) {
-                    localStorage.removeItem(key);
-                }
-            });
-            debugLog('🗑️ Cache limpo');
-        },
-
-        /**
-         * Gera chave única para cache baseada em parâmetros
-         * @function generateKey
-         * @param {string} unidade - Identificador da unidade
-         * @param {Object} periodo - Objeto com início e fim do período
-         * @returns {string} - Chave única gerada
-         */
-        generateKey: function(unidade, periodo) {
-            return `${unidade}_${periodo.inicio}_${periodo.fim}`;
+            debugLog('✅ Dados recuperados do cache:', key);
+            return cacheData.data;
+        } catch (error) {
+            console.warn('Erro ao ler do cache:', error);
+            this.remove(key);
+            return null;
         }
-    };
+    },
 
-    // Exportar cache manager para uso global
-    window.ChartCache = CacheManager;    /**
+    /**
+     * Remove item específico do cache
+     * @function remove
+     * @param {string} key - Chave do item a ser removido
+     */
+    remove: function(key) {
+        if (window.localStorage) {
+            localStorage.removeItem(CACHE_CONFIG.keyPrefix + key);
+        }
+    },
+
+    /**
+     * Limpa todo o cache do sistema
+     * @function clear
+     */
+    clear: function() {
+        if (!window.localStorage) return;
+        
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            if (key.startsWith(CACHE_CONFIG.keyPrefix)) {
+                localStorage.removeItem(key);
+            }
+        });
+        debugLog('🗑️ Cache limpo');
+    },
+
+    /**
+     * Gera chave única para cache baseada em parâmetros
+     * @function generateKey
+     * @param {string} unidade - Identificador da unidade
+     * @param {Object} periodo - Objeto com início e fim do período
+     * @returns {string} - Chave única gerada
+     */
+    generateKey: function(unidade, periodo) {
+        return `${unidade}_${periodo.inicio}_${periodo.fim}`;
+    }
+};
+
+// Exportar cache manager para uso global
+window.ChartCache = CacheManager;    /**
      * Função para redimensionar gráficos com debouncing otimizado
      * Evita múltiplas chamadas durante redimensionamento da janela
      * @function redimensionarGraficos
@@ -1078,9 +1189,328 @@ document.addEventListener("DOMContentLoaded", function () {
     };
     
     // Log das estatísticas de inicialização em debug mode
-    if (DEBUG_MODE) {
-        setTimeout(() => {
+    if (DEBUG_MODE) {        setTimeout(() => {
             debugLog('📊 Estatísticas de performance:', window.getPerformanceStats());
         }, 2000);
     }
+
+    // Note: Legacy line reference debug functions removed - using concentric gauge design instead
+
+    /**
+     * Função de debug para verificar os dados e forçar teste de linhas
+     */
+    function debugLinhaReferencia() {
+        console.log('🔍 DEBUG: Verificando dados dos gauges...');
+        
+        // Verificar se há gauges na página
+        const gauges = document.querySelectorAll('[id^="gauge"]');
+        console.log(`Encontrados ${gauges.length} gauges na página`);
+        
+        // Verificar estrutura dos dados globais
+        console.log('📋 Dados globais disponíveis:', !!window.dadosGraficos);
+        if (window.dadosGraficos) {
+            console.log('📋 Total de serviços nos dados:', Object.keys(window.dadosGraficos).length);
+            console.log('📋 IDs dos serviços:', Object.values(window.dadosGraficos).map(d => d.id));
+        }
+        
+        gauges.forEach((gauge, index) => {
+            const elementId = gauge.id;
+            console.log(`\n📊 GAUGE ${index + 1}: ${elementId}`);
+            
+            // Verificar se SVG existe e estrutura
+            const svg = gauge.querySelector('svg');
+            console.log(`   🎨 SVG presente: ${!!svg}`);
+            if (svg) {
+                const paths = svg.querySelectorAll('path');
+                console.log(`   🎨 Paths encontrados: ${paths.length}`);
+                const existingLines = svg.querySelectorAll('.pactuado-reference-line');
+                console.log(`   📏 Linhas existentes: ${existingLines.length}`);
+            }
+            
+            // Buscar dados correspondentes
+            if (window.dadosGraficos) {
+                const servicoId = elementId.replace('gauge', '');
+                const dados = Object.values(window.dadosGraficos).find(d => d.id.toString() === servicoId);
+                
+                if (dados) {
+                    const totalExecutados = parseInt(dados.total_executados) || 0;
+                    const metaPdt = parseInt(dados.meta_pdt) || 0;
+                    const progresso = metaPdt > 0 ? Math.min(100, Math.round((totalExecutados / metaPdt) * 100)) : 0;
+                    
+                    let totalPactuado = 0;
+                    if (dados.dadosDiarios && Array.isArray(dados.dadosDiarios)) {
+                        totalPactuado = dados.dadosDiarios.reduce((sum, dia) => {
+                            return sum + (parseInt(dia.pactuado) || 0);
+                        }, 0);
+                        console.log(`   📊 Dias com dados: ${dados.dadosDiarios.length}`);
+                        console.log(`   📊 Valores diários pactuado:`, dados.dadosDiarios.map(d => d.pactuado));
+                    }
+                    
+                    const progressoPactuado = metaPdt > 0 ? Math.min(100, Math.round((totalPactuado / metaPdt) * 100)) : 0;
+                    
+                    console.log(`   📈 Executados: ${totalExecutados}, Meta: ${metaPdt}, Progresso: ${progresso}%`);
+                    console.log(`   🎯 Pactuado Total: ${totalPactuado}, Progresso Pactuado: ${progressoPactuado}%`);
+                    
+                    // Testar linha com valor real primeiro
+                    console.log(`   🧪 Testando linha com valor real: ${progressoPactuado}%`);
+                    adicionarLinhaReferenciaPactuado(elementId, progressoPactuado);
+                    
+                } else {
+                    console.log(`   ❌ Dados não encontrados para serviço ${servicoId}`);
+                    console.log(`   🔍 Serviços disponíveis:`, Object.values(window.dadosGraficos || {}).map(d => `ID:${d.id}`));
+                }
+            } else {
+                console.log(`   ❌ window.dadosGraficos não está disponível`);
+            }
+        });
+    }
+      /**
+     * Função para testar todos os percentuais em um gauge específico
+     */
+    function testarTodosPercentuais(elementId) {
+        console.log(`🧪 TESTE COMPLETO PARA ${elementId}:`);
+        
+        const percentuais = [0, 25, 50, 75, 84, 100];
+        let delay = 0;
+        
+        percentuais.forEach((percentual, index) => {
+            setTimeout(() => {
+                console.log(`   🎯 Testando ${percentual}%...`);
+                adicionarLinhaReferenciaPactuado(elementId, percentual);
+                
+                // Verificar se linha foi criada
+                setTimeout(() => {
+                    const container = document.querySelector(`#${elementId}`);
+                    if (container) {
+                        const lines = container.querySelectorAll('.pactuado-reference-line');
+                        console.log(`   ✅ Linhas encontradas para ${percentual}%: ${lines.length}`);
+                    }
+                }, 200);
+                
+            }, delay);
+            delay += 1500; // 1.5 segundos entre cada teste
+        });
+    }
+    
+    /**
+     * Função para testar correção do semicírculo IMEDIATAMENTE
+     * Use no console: testarCorrecaoSemicirculo('gauge1')
+     */
+    function testarCorrecaoSemicirculo(elementId) {
+        console.log(`🎯 TESTE DE CORREÇÃO SEMICÍRCULO PARA ${elementId}:`);
+        console.log(`   ✅ 0% deve aparecer na ESQUERDA do semicírculo`);
+        console.log(`   ✅ 50% deve aparecer no TOPO do semicírculo`);
+        console.log(`   ✅ 100% deve aparecer na DIREITA do semicírculo`);
+        
+        // Teste imediato - 0%
+        setTimeout(() => {
+            console.log(`🔍 Testando 0% (deve ficar na ESQUERDA)...`);
+            adicionarLinhaReferenciaPactuado(elementId, 0);
+        }, 100);
+        
+        // Teste imediato - 50%
+        setTimeout(() => {
+            console.log(`🔍 Testando 50% (deve ficar no TOPO)...`);
+            adicionarLinhaReferenciaPactuado(elementId, 50);
+        }, 2000);
+        
+        // Teste imediato - 100%
+        setTimeout(() => {
+            console.log(`🔍 Testando 100% (deve ficar na DIREITA)...`);
+            adicionarLinhaReferenciaPactuado(elementId, 100);
+        }, 4000);
+    }    // Exportar para console
+    window.debugLinhaReferencia = debugLinhaReferencia;
+    window.testarTodosPercentuais = testarTodosPercentuais;
+    window.testarCorrecaoSemicirculo = testarCorrecaoSemicirculo;
+
+    /**
+     * Função de debug para analisar completamente a estrutura do ApexCharts
+     * Analisa todos os elementos SVG dos gauges na página
+     */
+    function debugApexChartsStructure() {
+        console.log('🔍 ANÁLISE COMPLETA DA ESTRUTURA APEXCHARTS:');
+        console.log('==========================================');
+        
+        const gauges = document.querySelectorAll('[id^="gauge"]');
+        console.log(`📊 Total de gauges encontrados: ${gauges.length}`);
+        
+        gauges.forEach((gauge, index) => {
+            console.log(`\n📈 GAUGE ${index + 1}: ${gauge.id}`);
+            console.log('----------------------------------------');
+            
+            const svg = gauge.querySelector('svg');
+            if (!svg) {
+                console.log('❌ SVG não encontrado');
+                return;
+            }
+            
+            console.log(`📐 Dimensões SVG: ${svg.clientWidth}x${svg.clientHeight}`);
+            console.log(`🎨 ViewBox: ${svg.getAttribute('viewBox') || 'não definido'}`);
+            
+            // Analisar grupos
+            const groups = svg.querySelectorAll('g');
+            console.log(`📦 Grupos encontrados: ${groups.length}`);
+            groups.forEach((group, gIndex) => {
+                const className = group.className.baseVal || group.getAttribute('class') || 'sem classe';
+                console.log(`   Grupo ${gIndex}: ${className}`);
+            });
+            
+            // Analisar paths (as barras do gauge)
+            const paths = svg.querySelectorAll('path');
+            console.log(`🎯 Paths encontrados: ${paths.length}`);
+            paths.forEach((path, pIndex) => {
+                const stroke = path.getAttribute('stroke');
+                const fill = path.getAttribute('fill');
+                const strokeWidth = path.getAttribute('stroke-width');
+                console.log(`   Path ${pIndex}: stroke=${stroke}, fill=${fill}, width=${strokeWidth}`);
+            });
+            
+            // Analisar textos
+            const texts = svg.querySelectorAll('text');
+            console.log(`📝 Textos encontrados: ${texts.length}`);
+            texts.forEach((text, tIndex) => {
+                console.log(`   Texto ${tIndex}: "${text.textContent}" (${text.getAttribute('class') || 'sem classe'})`);
+            });
+        });
+    }
+
+    /**
+     * Função específica para analisar elementos radialBar
+     * Foca nos elementos específicos dos gauges concêntricos
+     */
+    function analisarRadialBar() {
+        console.log('🎯 ANÁLISE ESPECÍFICA RADIALBAR:');
+        console.log('================================');
+        
+        const gauges = document.querySelectorAll('[id^="gauge"]');
+        
+        gauges.forEach((gauge, index) => {
+            console.log(`\n⭕ RADIALBAR ${index + 1}: ${gauge.id}`);
+            console.log('----------------------------');
+            
+            const svg = gauge.querySelector('svg');
+            if (!svg) return;
+            
+            // Buscar elementos específicos do radialBar
+            const radialBarGroups = svg.querySelectorAll('g[class*="radial"]');
+            console.log(`🔄 Grupos radial encontrados: ${radialBarGroups.length}`);
+            
+            const progressPaths = svg.querySelectorAll('path[stroke-dasharray]');
+            console.log(`📊 Paths de progresso: ${progressPaths.length}`);
+            
+            progressPaths.forEach((path, pIndex) => {
+                const dashArray = path.getAttribute('stroke-dasharray');
+                const dashOffset = path.getAttribute('stroke-dashoffset');
+                const stroke = path.getAttribute('stroke');
+                console.log(`   Série ${pIndex}: ${stroke} - dasharray: ${dashArray}, offset: ${dashOffset}`);
+            });
+            
+            // Verificar se é concêntrico (duas séries)
+            if (progressPaths.length === 2) {
+                console.log('✅ GAUGE CONCÊNTRICO DETECTADO - Duas séries encontradas');
+                console.log(`   📊 Série externa: ${progressPaths[0].getAttribute('stroke')}`);
+                console.log(`   📋 Série interna: ${progressPaths[1].getAttribute('stroke')}`);
+            } else {
+                console.log(`❌ Gauge não concêntrico - ${progressPaths.length} série(s) encontrada(s)`);
+            }
+        });
+    }
+
+    /**
+     * Função para testar diferentes métodos de posicionamento
+     * Testa várias abordagens para posicionar elementos no gauge
+     */
+    function testarPosicionamentoInteligente() {
+        console.log('🧪 TESTE DE POSICIONAMENTO INTELIGENTE:');
+        console.log('=======================================');
+        
+        const gauges = document.querySelectorAll('[id^="gauge"]');
+        if (gauges.length === 0) {
+            console.log('❌ Nenhum gauge encontrado para teste');
+            return;
+        }
+        
+        const primeiroGauge = gauges[0];
+        const elementId = primeiroGauge.id;
+        
+        console.log(`🎯 Testando posicionamento no gauge: ${elementId}`);
+        
+        // Método 1: Posicionamento por getBoundingClientRect
+        console.log('\n📐 MÉTODO 1: getBoundingClientRect');
+        const container = document.querySelector(`#${elementId}`);
+        if (container) {
+            const rect = container.getBoundingClientRect();
+            console.log(`   Container: x=${rect.x}, y=${rect.y}, w=${rect.width}, h=${rect.height}`);
+        }
+        
+        // Método 2: Posicionamento por SVG viewBox
+        console.log('\n📐 MÉTODO 2: SVG viewBox');
+        const svg = primeiroGauge.querySelector('svg');
+        if (svg) {
+            const viewBox = svg.getAttribute('viewBox');
+            const clientRect = svg.getBoundingClientRect();
+            console.log(`   ViewBox: ${viewBox}`);
+            console.log(`   Cliente: w=${clientRect.width}, h=${clientRect.height}`);
+        }
+        
+        // Método 3: Posicionamento por path getBBox
+        console.log('\n📐 MÉTODO 3: Path getBBox');
+        const paths = svg?.querySelectorAll('path');
+        if (paths && paths.length > 0) {
+            paths.forEach((path, index) => {
+                try {
+                    const bbox = path.getBBox();
+                    console.log(`   Path ${index}: x=${bbox.x}, y=${bbox.y}, w=${bbox.width}, h=${bbox.height}`);
+                } catch (e) {
+                    console.log(`   Path ${index}: Erro ao obter bbox - ${e.message}`);
+                }
+            });
+        }
+        
+        // Método 4: Posicionamento relativo ao centro
+        console.log('\n📐 MÉTODO 4: Centro calculado');
+        if (svg) {
+            const svgRect = svg.getBoundingClientRect();
+            const centerX = svgRect.width / 2;
+            const centerY = svgRect.height / 2;
+            console.log(`   Centro calculado: (${centerX}, ${centerY})`);
+            
+            // Testar posicionamento de elemento no centro
+            console.log('   🧪 Testando elemento no centro...');
+            const testElement = document.createElement('div');
+            testElement.style.cssText = `
+                position: absolute;
+                width: 4px;
+                height: 4px;
+                background: red;
+                border-radius: 50%;
+                left: ${centerX - 2}px;
+                top: ${centerY - 2}px;
+                z-index: 1000;
+                pointer-events: none;
+            `;
+            testElement.className = 'test-center-marker';
+            
+            // Remover marcador anterior se existir
+            container?.querySelector('.test-center-marker')?.remove();
+            
+            if (container) {
+                container.style.position = 'relative';
+                container.appendChild(testElement);
+                console.log('   ✅ Marcador vermelho adicionado no centro calculado');
+                
+                // Remover após 3 segundos
+                setTimeout(() => {
+                    testElement.remove();
+                    console.log('   🗑️ Marcador removido');
+                }, 3000);
+            }
+        }
+    }
+
+    // Exportar funções de debug para o console
+    window.debugApexChartsStructure = debugApexChartsStructure;
+    window.analisarRadialBar = analisarRadialBar;
+    window.testarPosicionamentoInteligente = testarPosicionamentoInteligente;
 });

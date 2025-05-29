@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Debug - Concentric Gauge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .debug-panel {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .debug-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .debug-button:hover {
+            background: #0056b3;
+        }
+        
+        .gauge-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        #console-output {
+            background: #212529;
+            color: #28a745;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 4px;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 12px;
+        }
+    </style>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Teste Debug - Concentric Gauge</h1>
+        
+        <div class="debug-panel">
+            <h3>Funções de Debug</h3>
+            <p>Use os botões abaixo para executar as funções de debug ou digite diretamente no console:</p>
+            <button class="debug-button" onclick="executarDebugCompleto()">🔍 Debug Completo</button>
+            <button class="debug-button" onclick="executarAnaliseRadialBar()">📊 Analisar RadialBar</button>
+            <button class="debug-button" onclick="executarTestePosicionamento()">🎯 Testar Posicionamento</button>
+            <button class="debug-button" onclick="limparConsole()">🗑️ Limpar Console</button>
+        </div>
+        
+        <div id="console-output"></div>
+        
+        <div class="gauge-container">
+            <h3>Exemplo de Gauge</h3>
+            <div id="gauge123" style="height: 300px;"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@latest"></script>
+    <script>
+        // Simular dados de exemplo
+        window.dadosGraficos = {
+            'servico123': {
+                id: 123,
+                nome_servico: 'Consultas Cardiologia',
+                total_executados: 85,
+                meta_pdt: 100,
+                dadosDiarios: [
+                    { data: '2024-01-01', executados: 8, pactuado: 10 },
+                    { data: '2024-01-02', executados: 12, pactuado: 10 },
+                    { data: '2024-01-03', executados: 9, pactuado: 10 }
+                ]
+            }
+        };
+
+        // Override console.log para mostrar no painel
+        const originalConsoleLog = console.log;
+        const consoleOutput = document.getElementById('console-output');
+        
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            consoleOutput.textContent += message + '\n';
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        };
+
+        function executarDebugCompleto() {
+            console.log('=== EXECUTANDO DEBUG COMPLETO ===');
+            if (typeof window.debugApexChartsStructure === 'function') {
+                window.debugApexChartsStructure();
+            } else {
+                console.log('❌ Função debugApexChartsStructure não encontrada');
+            }
+        }
+
+        function executarAnaliseRadialBar() {
+            console.log('=== EXECUTANDO ANÁLISE RADIAL BAR ===');
+            if (typeof window.analisarRadialBar === 'function') {
+                window.analisarRadialBar();
+            } else {
+                console.log('❌ Função analisarRadialBar não encontrada');
+            }
+        }
+
+        function executarTestePosicionamento() {
+            console.log('=== EXECUTANDO TESTE POSICIONAMENTO ===');
+            if (typeof window.testarPosicionamentoInteligente === 'function') {
+                window.testarPosicionamentoInteligente();
+            } else {
+                console.log('❌ Função testarPosicionamentoInteligente não encontrada');
+            }
+        }
+
+        function limparConsole() {
+            consoleOutput.textContent = '';
+        }
+
+        // Criar gauge de exemplo após carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Página carregada, criando gauge de exemplo...');
+            
+            // Simular a criação de um gauge concêntrico
+            setTimeout(() => {
+                criarGaugeExemplo();
+            }, 1000);
+        });
+
+        function criarGaugeExemplo() {
+            const dados = window.dadosGraficos['servico123'];
+            const totalExecutados = parseInt(dados.total_executados) || 0;
+            const metaPdt = parseInt(dados.meta_pdt) || 0;
+            const progressoRealizado = metaPdt > 0 ? Math.min(100, Math.round((totalExecutados / metaPdt) * 100)) : 0;
+            
+            // Calcular total pactuado
+            let totalPactuado = 0;
+            if (dados.dadosDiarios && Array.isArray(dados.dadosDiarios)) {
+                totalPactuado = dados.dadosDiarios.reduce((sum, dia) => {
+                    return sum + (parseInt(dia.pactuado) || 0);
+                }, 0);
+            }
+            const progressoPactuado = metaPdt > 0 ? Math.min(100, Math.round((totalPactuado / metaPdt) * 100)) : 0;
+
+            console.log(`📊 Criando gauge: Realizado=${progressoRealizado}%, Pactuado=${progressoPactuado}%`);
+
+            const options = {
+                series: [progressoRealizado, progressoPactuado],
+                chart: {
+                    height: 280,
+                    type: 'radialBar',
+                    fontFamily: 'Inter, sans-serif'
+                },
+                plotOptions: {
+                    radialBar: {
+                        hollow: {
+                            size: '30%',
+                        },
+                        dataLabels: {
+                            name: {
+                                fontSize: '22px',
+                                color: '#333'
+                            },
+                            value: {
+                                fontSize: '16px',
+                                color: '#666'
+                            },
+                            total: {
+                                show: true,
+                                label: totalExecutados.toString(),
+                                formatter: function (w) {
+                                    return progressoRealizado + '%';
+                                },
+                                color: '#333'
+                            }
+                        },
+                        track: {
+                            background: '#f2f2f2',
+                            strokeWidth: '97%',
+                            margin: 5
+                        },
+                        strokeWidth: [12, 8]
+                    }
+                },
+                labels: ['Realizado', 'Pactuado'],
+                colors: ['#ff9500', '#007bff'],
+                legend: {
+                    show: true,
+                    position: 'bottom',
+                    fontSize: '14px',
+                    fontFamily: 'Inter, sans-serif',
+                    markers: {
+                        width: 12,
+                        height: 12,
+                        radius: 6
+                    },
+                    itemMargin: {
+                        horizontal: 10,
+                        vertical: 5
+                    }
+                }
+            };
+
+            const chart = new ApexCharts(document.querySelector("#gauge123"), options);
+            chart.render().then(() => {
+                console.log('✅ Gauge exemplo criado com sucesso!');
+                console.log('🔧 Agora você pode executar as funções de debug');
+            });
+        }
+    </script>
+    
+    <script src="assets/js/relatorio.js"></script>
+</body>
+</html>

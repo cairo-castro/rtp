@@ -18,12 +18,10 @@
     </main>      <!-- ApexCharts - Biblioteca moderna para gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.2/dist/apexcharts.min.js" 
             crossorigin="anonymous"></script>
-        
-    <!-- Scripts locais - ApexCharts Implementation -->
+          <!-- Scripts locais - ApexCharts Implementation -->
     <?php 
-    // Usar versão minificada em produção
-    $isProduction = !in_array($_SERVER['HTTP_HOST'] ?? '', ['localhost', '127.0.0.1']);
-    $jsFile = $isProduction ? 'relatorio.min.js' : 'relatorio.js';
+    // Usar sempre relatorio.js (removemos a versão minificada para melhor manutenibilidade)
+    $jsFile = 'relatorio.js';
     $jsPath = PUBLIC_PATH . '/assets/js/' . $jsFile;
     ?>
     <script src="/assets/js/<?php echo $jsFile; ?>?v=<?php echo file_exists($jsPath) ? filemtime($jsPath) : time(); ?>"></script>
