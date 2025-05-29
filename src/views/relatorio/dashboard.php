@@ -30,14 +30,18 @@
                             </div>
                         </div>
 
-                        <!-- Serviços do grupo -->
-                        <div class="group-services" style="border-left-color: <?php echo htmlspecialchars($grupo['grupo_cor']); ?>">                            <?php foreach ($grupo['servicos'] as $servicoIndex => $servico) {
+                        <!-- Serviços do grupo -->                        <div class="group-services" style="border-left-color: <?php echo htmlspecialchars($grupo['grupo_cor']); ?>">                            <?php foreach ($grupo['servicos'] as $servicoIndex => $servico) {
                                 $total_executados = (int)$servico['total_executados'];
                                 $meta_pdt = (int)$servico['meta_pdt'];
                                 
                                 // Calcular totais de pactuado e agendado dos dados diários
                                 $total_pactuado = 0;
                                 $total_agendado = 0;
+                                
+                                // Garantir que dados_graficos existe
+                                if (!isset($dados_graficos)) {
+                                    $dados_graficos = [];
+                                }
                                 
                                 // Verificar se existe dados diários para este serviço
                                 if (isset($dados_graficos[$indiceGraficoGlobal]['dadosDiarios'])) {
@@ -69,14 +73,12 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="service-body">
-                                        <div class="chart-container">
-                                            <canvas id="grafico<?php echo $indiceGrafico; ?>"></canvas>
+                                    <div class="service-body">                                        <div class="chart-container">
+                                            <div id="grafico<?php echo $indiceGrafico; ?>"></div>
                                         </div>
                                         
-                                        <div class="gauge-summary">
-                                            <div class="gauge-container">
-                                                <canvas id="gauge<?php echo $indiceGrafico; ?>"></canvas>                                                <div class="gauge-info">
+                                        <div class="gauge-summary">                                            <div class="gauge-container">
+                                                <div id="gauge<?php echo $indiceGrafico; ?>"></div><div class="gauge-info">
                                                     <div class="gauge-value"><?php echo formatarNumero($total_pactuado); ?></div>
                                                     <div class="gauge-percent"><?php echo formatarNumero($progresso, 2); ?>%</div>
                                                     <div class="gauge-target"><?php echo formatarNumero($total_agendado); ?></div>

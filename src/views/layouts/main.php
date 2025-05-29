@@ -15,15 +15,17 @@
     <!-- Main Content -->
     <main class="main-content">
         <?php echo $content; ?>
-    </main>
-    
-    <!-- Chart.js UMD version - compatível com browsers sem módulos -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js" 
+    </main>      <!-- ApexCharts - Biblioteca moderna para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.2/dist/apexcharts.min.js" 
             crossorigin="anonymous"></script>
-    
-    <!-- ChartJS Plugin Datalabels - versão corrigida -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js" 
-            crossorigin="anonymous"></script>        <!-- Scripts locais -->
-    <script src="/assets/js/relatorio.js?v=<?php echo filemtime(PUBLIC_PATH . '/assets/js/relatorio.js'); ?>"></script>
+        
+    <!-- Scripts locais - ApexCharts Implementation -->
+    <?php 
+    // Usar versão minificada em produção
+    $isProduction = !in_array($_SERVER['HTTP_HOST'] ?? '', ['localhost', '127.0.0.1']);
+    $jsFile = $isProduction ? 'relatorio.min.js' : 'relatorio.js';
+    $jsPath = PUBLIC_PATH . '/assets/js/' . $jsFile;
+    ?>
+    <script src="/assets/js/<?php echo $jsFile; ?>?v=<?php echo file_exists($jsPath) ? filemtime($jsPath) : time(); ?>"></script>
 </body>
 </html>
