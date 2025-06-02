@@ -66,3 +66,13 @@ date_default_timezone_set('America/Sao_Paulo');
  * Configuração de locale para português brasileiro
  */
 setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'portuguese');
+
+/**
+ * Carregar configurações do banco de dados
+ */
+require_once __DIR__ . '/database.php';
+
+/**
+ * Carregar funções auxiliares
+ */
+require_once APP_ROOT . '/src/helpers/relatorio_helpers.php';

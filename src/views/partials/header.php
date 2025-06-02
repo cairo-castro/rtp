@@ -1,13 +1,14 @@
 <!-- CABEÇALHO FIXO - Layout responsivo otimizado -->
 <header class="dashboard-header fixed">
     <!-- Primeira linha do header -->
-    <div class="header-main-row">
-        <div class="logo-container">
-            <img src="/assets/images/logo-emserh-em-png.png" alt="EMSERH" class="logo">
-            <div class="header-title">
-                <h1>ACOMPANHAMENTO DIÁRIO DE PRODUTIVIDADE</h1>
+    <div class="header-wrapper">
+        <div class="header-main-row">            <div class="logo-container">
+                <?php $baseUrl = rtrim(BASE_URL, '/'); ?>
+                <img src="<?php echo $baseUrl; ?>/assets/images/logo-emserh-em-png.png" alt="EMSERH" class="logo">
+                <div class="header-title">
+                    <h1>ACOMPANHAMENTO DIÁRIO DE PRODUTIVIDADE</h1>
+                </div>
             </div>
-        </div>
                        
         <div class="filters">
             <div class="filter-item">
@@ -38,17 +39,19 @@
             <?php if (isset($produtividade_geral)): ?>
             <div class="productivity-value" aria-label="Produtividade atual">
                 <?php echo formatarNumero($produtividade_geral, 2); ?>%
-            </div>
-            <div class="productivity-label">Produtividade</div>
+            </div>            <div class="productivity-label">Produtividade</div>
             <?php else: ?>
             <div class="productivity-value" aria-label="Produtividade não disponível">--</div>
             <div class="productivity-label">Produtividade</div>
             <?php endif; ?>
         </div>
+        </div>
     </div>
     
-    <!-- Segunda linha do header - Seleção de Unidade -->    <div class="header-second-row">
-        <div class="unit-filter">
+    <!-- Segunda linha do header - Seleção de Unidade -->
+    <div class="header-wrapper">
+        <div class="header-second-row">
+            <div class="unit-filter">
             <label for="unidade">Unidade:</label>
             <select name="unidade" id="unidade" class="unit-select" onchange="document.getElementById('mainForm').submit();" aria-label="Selecionar unidade">
                 <option value="">Selecione a Unidade</option>
@@ -57,9 +60,9 @@
                         <option value="<?php echo $u['id']; ?>" <?php echo (isset($unidade) && $unidade == $u['id']) ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($u['nome']); ?>
                         </option>
-                    <?php } ?>
-                <?php endif; ?>
+                    <?php } ?>                <?php endif; ?>
             </select>
+        </div>
         </div>
     </div>
 </header>

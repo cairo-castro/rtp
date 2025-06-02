@@ -37,13 +37,21 @@ body {
     min-height: 100vh;
 }
 
+/* Wrapper principal para centralizar e dar espaçamento */
+.dashboard-wrapper {
+    max-width: 1400px; /* Largura máxima do conteúdo */
+    margin: 0 auto; /* Centralizar horizontalmente */
+    padding: 0 20px; /* Espaçamento lateral */
+    box-sizing: border-box;
+}
+
 /* Layout do dashboard */
 .dashboard-container {
     width: 100%;
-    margin: 0 auto;
+    margin: 0;
     margin-top: 160px; /* Espaço aumentado para o header fixo de duas linhas */
     background-color: var(--white);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px; /* Bordas arredondadas para melhor visual */
 }
 
 /* Cabeçalho completo como na imagem original - AGORA FIXO COM GRID */
@@ -51,10 +59,18 @@ body {
     display: grid;
     grid-template-rows: 1fr auto; /* Duas linhas: primeira flexível, segunda automática */
     padding: 0;
-    background-color: var(--white);
-    border-bottom: 1px solid var(--border-light);
+    background-color: var(--light-gray);
     gap: 0;
     min-height: 120px; /* Altura mínima garantida para duas linhas */
+}
+
+/* Wrapper do header para manter consistência com o conteúdo */
+.header-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Primeira linha do header */
@@ -75,7 +91,6 @@ body {
     transform: translateX(-50%);
     width: 100%;
     z-index: 1050;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px); /* Efeito blur para melhor legibilidade */
 }
 
@@ -448,6 +463,14 @@ body {
 
 /* Tablet responsivo */
 @media (max-width: 1200px) {
+    .dashboard-wrapper {
+        padding: 0 15px; /* Reduzir padding lateral em tablets */
+    }
+    
+    .header-wrapper {
+        padding: 0 15px;
+    }
+    
     .services-container {
         margin-left: 0;
         padding-left: 75px; /* Espaço para abas maiores em telas menores */
@@ -482,6 +505,14 @@ body {
 
 /* Layout responsivo para telas médias */
 @media (max-width: 992px) {
+    .dashboard-wrapper {
+        padding: 0 10px; /* Menor padding em telas médias */
+    }
+    
+    .header-wrapper {
+        padding: 0 10px;
+    }
+    
     /* Header Responsivo - Reorganização completa */
     .dashboard-header.fixed {
         min-height: auto;
@@ -583,6 +614,14 @@ body {
 
 /* Mobile pequeno - Melhorias aprimoradas */
 @media (max-width: 768px) {
+    .dashboard-wrapper {
+        padding: 0 8px; /* Padding ainda menor para mobile */
+    }
+    
+    .header-wrapper {
+        padding: 0 8px;
+    }
+    
     /* Header responsivo para mobile */
     .dashboard-header {
         min-height: 180px; /* Altura otimizada para mobile */
@@ -699,6 +738,14 @@ body {
 
 /* Mobile muito pequeno - Otimizações finais */
 @media (max-width: 480px) {
+    .dashboard-wrapper {
+        padding: 0 5px; /* Padding mínimo para telas muito pequenas */
+    }
+    
+    .header-wrapper {
+        padding: 0 5px;
+    }
+    
     .dashboard-header {
         min-height: 170px; /* Altura compacta para telas muito pequenas */
     }

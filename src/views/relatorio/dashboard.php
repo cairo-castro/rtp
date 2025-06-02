@@ -1,8 +1,10 @@
 
-<div class="dashboard-container">    <!-- Formulário principal -->
-    <form method="GET" id="mainForm">
-        <!-- CABEÇALHO FIXO - usando partial -->
-        <?php include __DIR__ . '/../partials/header.php'; ?>
+<div class="dashboard-wrapper">
+    <div class="dashboard-container">
+        <!-- Formulário principal -->
+        <form method="GET" id="mainForm">
+            <!-- CABEÇALHO FIXO - usando partial -->
+            <?php include __DIR__ . '/../partials/header.php'; ?>
         
         <!-- Conteúdo principal com layout original + abas informativas COLORIDAS -->
         <?php if (!empty($unidade) && !empty($relatorio_por_grupos)) { ?>
@@ -63,14 +65,6 @@
                                 <div class="service-section">
                                     <div class="service-header" style="background-color: <?php echo $service_color; ?>;">
                                         <h3><?php echo htmlspecialchars($servico['natureza']); ?></h3>
-                                        <div class="service-controls">
-                                            <button type="button" class="btn-control" aria-label="Expandir"><i class="arrow-up"></i></button>
-                                            <button type="button" class="btn-control" aria-label="Reduzir"><i class="arrow-down"></i></button>
-                                            <button type="button" class="btn-control" aria-label="Anterior"><i class="arrow-left"></i></button>
-                                            <button type="button" class="btn-control" aria-label="Próximo"><i class="arrow-right"></i></button>
-                                            <button type="button" class="btn-control" aria-label="Restaurar"><i class="restore"></i></button>
-                                            <button type="button" class="btn-control" aria-label="Mais opções"><i class="more"></i></button>
-                                        </div>
                                     </div>
                                     
                                     <div class="service-body">                                        <div class="chart-container">
@@ -109,6 +103,7 @@
                 <p>Selecione uma unidade para visualizar o relatório de produtividade.</p>
             </div>        <?php } ?>
     </form>
+    </div>
 </div>
 
 <!-- JavaScript para aplicar cores das abas automaticamente -->

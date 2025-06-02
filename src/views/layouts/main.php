@@ -9,21 +9,29 @@
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
-          rel="stylesheet" crossorigin="anonymous">    <link rel="stylesheet" href="/assets/css/relatorio.css?v=<?php echo filemtime(PUBLIC_PATH . '/assets/css/relatorio.css'); ?>">
+          rel="stylesheet" crossorigin="anonymous">    <!-- CSS Local com verificação de existência -->
+    <?php 
+    $cssPath = APP_ROOT . '/assets/css/relatorio.css';
+    $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
+    $baseUrl = rtrim(BASE_URL, '/');
+    ?>
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/relatorio.css?v=<?php echo $cssVersion; ?>">
 </head>
 <body>
     <!-- Main Content -->
     <main class="main-content">
         <?php echo $content; ?>
-    </main>      <!-- ApexCharts - Biblioteca moderna para gráficos -->
+    </main>
+    
+    <!-- ApexCharts - Biblioteca moderna para gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.2/dist/apexcharts.min.js" 
-            crossorigin="anonymous"></script>
-          <!-- Scripts locais - ApexCharts Implementation -->
+            crossorigin="anonymous"></script>    <!-- Scripts locais com verificação de existência -->
     <?php 
-    // Usar sempre relatorio.js (removemos a versão minificada para melhor manutenibilidade)
     $jsFile = 'relatorio.js';
-    $jsPath = PUBLIC_PATH . '/assets/js/' . $jsFile;
+    $jsPath = APP_ROOT . '/assets/js/' . $jsFile;
+    $jsVersion = file_exists($jsPath) ? filemtime($jsPath) : time();
+    $baseUrl = rtrim(BASE_URL, '/');
     ?>
-    <script src="/assets/js/<?php echo $jsFile; ?>?v=<?php echo file_exists($jsPath) ? filemtime($jsPath) : time(); ?>"></script>
+    <script src="<?php echo $baseUrl; ?>/assets/js/<?php echo $jsFile; ?>?v=<?php echo $jsVersion; ?>"></script>
 </body>
 </html>

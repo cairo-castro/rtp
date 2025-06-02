@@ -55,7 +55,7 @@ function getDatabaseConnection(): PDO {
  */
 function getDatabaseConfig(): array {
     return [
-        'host' => getenv('DB_HOST') ?: '193.203.175.60',
+        'host' => getenv('DB_HOST') ?: 'localhost',
         'dbname' => getenv('DB_NAME') ?: 'u313569922_rtpdiario',
         'username' => getenv('DB_USER') ?: 'u313569922_root9',
         'password' => getenv('DB_PASS') ?: 'Vhsl124578*'

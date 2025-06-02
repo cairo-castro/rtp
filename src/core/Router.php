@@ -5,11 +5,19 @@ class Router {
     
     public function __construct() {
         $this->routes = require APP_ROOT . '/src/config/routes.php';
-    }
-      public function dispatch() {
+    }    public function dispatch() {
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $path = rtrim($uri, '/') ?: '/';
+        
+        // Remove BASE_URL from the path to get the route path
+        $basePath = rtrim(BASE_URL, '/');
+        if ($basePath && strpos($uri, $basePath) === 0) {
+            $uri = substr($uri, strlen($basePath));
+        }
+        
+        // Ensure we have a clean path starting with /
+        $path = '/' . ltrim($uri, '/');
+        $path = rtrim($path, '/') ?: '/';
         
         // Verificar se é um arquivo estático (assets, favicon, etc.)
         if ($this->isStaticFile($path)) {
