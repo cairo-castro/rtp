@@ -231,7 +231,7 @@ body {
 
 /* Texto vertical da aba - MAIOR */
 .group-tab-text {
-    writing-mode: vertical-rl;
+    writing-mode: sideways-lr;
     text-orientation: mixed;
     font-size: 1.1rem; /* Aumentado de 0.85rem */
     font-weight: 700; /* Mais bold */
@@ -403,6 +403,88 @@ body {
 .gauge-target {
     font-size: 0.9rem;
     color: #666;
+}
+
+/* Legenda interativa do gauge */
+.gauge-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    padding: 8px 12px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.gauge-legend:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background-color: #ffffff;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.legend-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.realizado-color {
+    background-color: var(--accent-orange);
+}
+
+.meta-color {
+    background-color: var(--primary-blue);
+}
+
+.legend-text {
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+.legend-value {
+    font-weight: bold;
+    color: var(--dark-text);
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 2px;
+}
+
+.legend-separator {
+    margin: 0 8px;
+    color: #ccc;
+    font-weight: bold;
+}
+
+/* Efeitos de hover específicos para cada tipo */
+.legend-item[data-type="realizado"]:hover .legend-text,
+.legend-item[data-type="realizado"]:hover .legend-value {
+    color: var(--accent-orange);
+}
+
+.legend-item[data-type="meta"]:hover .legend-text,
+.legend-item[data-type="meta"]:hover .legend-value {
+    color: var(--primary-blue);
 }
 
 .summary-details {
@@ -667,17 +749,6 @@ body {
         align-items: center;
     }
     
-    .filter-item label {
-        font-size: 0.75rem;
-        margin-bottom: 4px;
-    }
-    
-    .filter-select {
-        width: 100%;
-        padding: 6px 8px;
-        font-size: 0.85rem;
-    }
-    
     .productivity-summary {
         padding: 10px 18px;
         min-width: auto;
@@ -687,52 +758,52 @@ body {
         font-size: 1.6rem;
     }
     
-    .productivity-label {
-        font-size: 0.8rem;
+    .dashboard-container {
+        margin-top: 200px; /* Espaço para header responsivo */
     }
 
-    /* Segunda linha do header em mobile */
-    .header-second-row {
-        padding: 12px 15px;
-        justify-content: center;
-    }
-    
-    .unit-filter {
+    /* Conteúdo principal */
+    .service-body {
         flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        width: 100%;
     }
     
-    .unit-filter label {
-        font-size: 0.85rem;
+    .gauge-summary {
+        width: 100%;
+        padding-left: 0;
+        margin-top: 20px;
     }
     
-    .unit-select {
-        width: 100%;
-        max-width: 280px;
-        padding: 8px 10px;
-        font-size: 0.85rem;
-    }
-
-    /* Conteúdo principal em mobile */
-    .service-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-      .chart-container {
-        height: 280px; /* Aumentado de 250px para manter proporção */
-        padding-bottom: 30px; /* Aumentado de 15px para dar mais espaço aos dias da semana */
+    .services-container {
+        margin-left: 0;
+        padding-left: 15px;
+        min-height: auto; /* Altura automática em mobile */
     }
     
     .group-tab {
-        height: 45px; /* Ligeiramente menor em telas muito pequenas */
+        position: relative;
+        left: 0;
+        width: 100%;
+        height: 50px; /* Altura aumentada para texto maior */
+        border-radius: 6px 6px 0 0;
+        border-right: 1px solid var(--tab-border);
+        border-bottom: none;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
     .group-tab-text {
-        font-size: 0.95rem;
-        padding: 12px 15px;
+        writing-mode: horizontal-tb;
+        text-orientation: initial;
+        padding: 15px 20px; /* Padding aumentado para mobile */
+        font-size: 1.0rem; /* Mantém tamanho razoável em mobile */
+        font-weight: 700;
+    }
+    
+    .group-services {
+        border-left: none;
+        border-top: 4px solid var(--border-light); /* Borda top mais espessa */
+        padding-left: 0;
+        padding-top: 15px;
     }
 }
 
@@ -836,108 +907,113 @@ body {
     }
 }
 
-/* Melhorar exibição dos rótulos de dias */
-.chart-js-render-monitor {
-    font-family: Arial, sans-serif;
+/* Melhorias específicas para responsividade dos gráficos */
+@media (max-width: 1024px) {
+    .chart-container {
+        height: 320px;
+        padding-bottom: 35px;
+    }
+    
+    .apexcharts-xaxis-texts-g text {
+        font-size: 9px !important;
+    }
+    
+    .custom-day-label {
+        font-size: 9px !important;
+    }
 }
 
-/* Estilos para o eixo X para dias das semanas */
-.chart-container .chartjs-axis-label {
-    font-size: 10px;
-    line-height: 1.2;
-    text-align: center;
+@media (max-width: 768px) {
+    .chart-container {
+        height: 300px;
+        padding-bottom: 40px;
+    }
+    
+    .apexcharts-xaxis-texts-g text {
+        font-size: 8px !important;
+    }
+    
+    .custom-day-label {
+        font-size: 8px !important;
+        opacity: 1 !important;
+    }
+    
+    /* Forçar visibilidade dos labels em mobile */
+    .apexcharts-xaxis {
+        min-height: 60px !important;
+    }
 }
 
-/* Estilos específicos para ApexCharts - labels multi-linha */
-.apexcharts-xaxis-texts-g text {
-    font-size: 10px !important;
-    line-height: 1.3 !important;
+@media (max-width: 480px) {
+    .chart-container {
+        height: 280px;
+        padding-bottom: 45px;
+    }
+    
+    .apexcharts-xaxis-texts-g text {
+        font-size: 7px !important;
+    }
+    
+    .custom-day-label {
+        font-size: 7px !important;
+        opacity: 1 !important;
+    }
+    
+    /* Garantir espaço mínimo para labels em telas muito pequenas */
+    .apexcharts-xaxis {
+        min-height: 70px !important;
+    }
 }
 
-.apexcharts-xaxis-label {
-    text-anchor: middle !important;
+/* Forçar não ocultação de elementos dos gráficos em qualquer resolução */
+.apexcharts-xaxis-texts-g,
+.apexcharts-xaxis-texts-g text,
+.custom-day-label {
+    visibility: visible !important;
+    display: block !important;
+    opacity: 1 !important;
 }
 
-/* Garantir espaçamento adequado para labels multi-linha */
-.apexcharts-xaxis {
-    overflow: visible !important;
+/* Overrides específicos para garantir visibilidade em ApexCharts */
+.apexcharts-canvas .apexcharts-xaxis-texts-g text {
+    display: block !important;
+    visibility: visible !important;
 }
 
-/* Aprimoramento dos gauges */
-.gauge-container {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    margin: 0 auto;
+.apexcharts-canvas .apexcharts-xaxis-texts-g {
+    display: block !important;
+    visibility: visible !important;
 }
 
-.gauge-info {
-    position: absolute;
-    top: 70%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    width: 100%;
+/* Garantir que labels customizados sempre sejam visíveis */
+.chart-container .custom-day-label {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
-.gauge-value {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: var(--accent-orange);
-    margin-bottom: 5px;
+/* Evitar que ApexCharts oculte elementos em telas pequenas */
+@media (max-width: 768px) {
+    .apexcharts-canvas * {
+        visibility: visible !important;
+    }
+    
+    .apexcharts-xaxis-texts-g text[opacity="0"] {
+        opacity: 1 !important;
+    }
 }
 
-.gauge-percent {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--dark-text);
-    margin-bottom: 5px;
+/* Força específica para mobile muito pequeno */
+@media (max-width: 480px) {
+    .apexcharts-canvas .apexcharts-xaxis-texts-g text {
+        opacity: 1 !important;
+        display: block !important;
+    }
+    
+    .custom-day-label {
+        z-index: 1000 !important;
+    }
 }
-
-.gauge-target {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-/* Estilo para quando não há dados */
-.welcome-message, .alert {
-    text-align: center;
-    padding: 40px 20px;
-    margin: 20px;
-    border-radius: 8px;
-}
-
-.welcome-message {
-    background-color: var(--light-gray);
-    border: 1px solid var(--border-light);
-}
-
-.alert-warning {
-    background-color: #fff3cd;
-    border: 1px solid #ffeaa7;
-    color: #856404;
-}
-
-/* Scrollbar personalizada para abas */
-.service-tabs::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-.service-tabs::-webkit-scrollbar-track {
-    background: var(--light-gray);
-}
-
-.service-tabs::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 3px;
-}
-
-.service-tabs::-webkit-scrollbar-thumb:hover {
-    background: #999;
-}
-
-/* ===== OTIMIZAÇÕES FINAIS ===== */
 
 /* Melhorar performance de animações */
 .filter-select, .unit-select, .productivity-summary {
@@ -978,7 +1054,7 @@ body {
 /* Estilos para labels customizados dos dias da semana */
 .custom-day-label {
     position: absolute !important;
-    font-size: 9px !important;
+    font-size: 10px !important;
     color: #666 !important;
     font-weight: normal !important;
     text-align: center !important;
@@ -987,6 +1063,22 @@ body {
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     opacity: 0.9 !important;
+    transition: opacity 0.2s ease !important;
+}
+
+/* Responsividade para labels customizados */
+@media (max-width: 768px) {
+    .custom-day-label {
+        font-size: 9px !important;
+        opacity: 1 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-day-label {
+        font-size: 8px !important;
+        opacity: 1 !important;
+    }
 }
 
 /* Garantir que os containers dos gráficos tenham overflow visível para os labels */
@@ -1007,6 +1099,19 @@ body {
     overflow: visible !important;
 }
 
+/* Melhorar responsividade dos textos do eixo X */
+@media (max-width: 768px) {
+    .apexcharts-xaxis-texts-g text {
+        font-size: 9px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .apexcharts-xaxis-texts-g text {
+        font-size: 8px !important;
+    }
+}
+
 /* Rotar os números das dataLabels para ficarem horizontais - múltiplos seletores */
 .apexcharts-datalabels text,
 .apexcharts-datalabel text,
@@ -1019,6 +1124,25 @@ body {
     font-weight: normal !important;
 }
 
+/* Responsividade para data labels */
+@media (max-width: 768px) {
+    .apexcharts-datalabels text,
+    .apexcharts-datalabel text,
+    .apexcharts-datalabels-group text,
+    .apexcharts-data-labels text {
+        font-size: 9px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .apexcharts-datalabels text,
+    .apexcharts-datalabel text,
+    .apexcharts-datalabels-group text,
+    .apexcharts-data-labels text {
+        font-size: 8px !important;
+    }
+}
+
 /* Forçar orientação horizontal para todos os textos de dados */
 .apexcharts-canvas .apexcharts-datalabels {
     transform: none !important;
@@ -1027,4 +1151,82 @@ body {
 .apexcharts-canvas .apexcharts-datalabels text {
     transform: rotate(0deg) !important;
     writing-mode: horizontal-tb !important;
+}
+
+/* Ajustes para a legenda em tablets e mobile */
+.gauge-legend {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    margin-bottom: 12px;
+}
+
+.legend-color {
+    width: 10px;
+    height: 10px;
+}
+
+.legend-value {
+    padding: 1px 4px;
+    font-size: 0.75rem;
+}
+
+/* Mobile - ajustes mais compactos para a legenda */
+@media (max-width: 768px) {
+    .gauge-legend {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        margin-bottom: 10px;
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .legend-item {
+        justify-content: center;
+        padding: 2px 4px;
+    }
+    
+    .legend-separator {
+        display: none; /* Ocultar separador vertical em mobile */
+    }
+    
+    .legend-color {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .legend-text {
+        font-size: 0.7rem;
+    }
+    
+    .legend-value {
+        padding: 1px 3px;
+        font-size: 0.65rem;
+    }
+}
+
+/* Mobile muito pequeno - ajustes extremos */
+@media (max-width: 480px) {
+    .gauge-legend {
+        font-size: 0.7rem;
+        padding: 3px 6px;
+        margin-bottom: 8px;
+    }
+    
+    .legend-item {
+        gap: 2px;
+    }
+    
+    .legend-color {
+        width: 6px;
+        height: 6px;
+    }
+    
+    .legend-text {
+        font-size: 0.65rem;
+    }
+    
+    .legend-value {
+        font-size: 0.6rem;
+        padding: 0px 2px;
+    }
 }
