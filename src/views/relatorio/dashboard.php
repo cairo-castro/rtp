@@ -44,7 +44,8 @@
                                 if (!isset($dados_graficos)) {
                                     $dados_graficos = [];
                                 }
-                                  // Verificar se existe dados diários para este serviço
+                                
+                                // Verificar se existe dados diários para este serviço
                                 if (isset($dados_graficos[$indiceGraficoGlobal]['dadosDiarios'])) {
                                     foreach ($dados_graficos[$indiceGraficoGlobal]['dadosDiarios'] as $dia) {
                                         $total_pactuado += (int)($dia['pactuado'] ?? 0);
