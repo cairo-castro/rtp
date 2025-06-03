@@ -389,9 +389,12 @@ body {
 }
 
 .gauge-value {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: var(--accent-orange);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    text-align: center;
+    /* A cor será definida inline baseada na cor do grupo */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Sombra sutil para melhor legibilidade */
 }
 
 .gauge-percent {
@@ -403,6 +406,11 @@ body {
 .gauge-target {
     font-size: 0.9rem;
     color: #666;
+}
+
+/* Garantir que a cor seja sempre visível */
+.gauge-value[style*="color"] {
+    font-weight: 800; /* Mais bold quando colorido */
 }
 
 /* Legenda interativa do gauge */
@@ -485,6 +493,36 @@ body {
 .legend-item[data-type="meta"]:hover .legend-text,
 .legend-item[data-type="meta"]:hover .legend-value {
     color: var(--primary-blue);
+}
+
+/* Remover cores fixas para permitir cores dinâmicas */
+.legend-color.realizado-color {
+    /* A cor será definida dinamicamente via JavaScript */
+    background-color: #fd7e14; /* Fallback apenas */
+}
+
+.legend-color.meta-color {
+    background-color: #0d6efd; /* Cor fixa para Meta PDT (azul) */
+}
+
+/* Cores dinâmicas aplicadas via JavaScript */
+.legend-color[data-dynamic-color] {
+    background-color: var(--dynamic-color) !important;
+}
+
+/* Hover effects dinâmicos */
+.legend-item[data-type="realizado"] {
+    /* Hover será aplicado dinamicamente */
+}
+
+.legend-item[data-type="meta"]:hover {
+    background-color: rgba(13, 110, 253, 0.1); /* Fundo azul claro no hover */
+}
+
+.legend-item[data-type="meta"]:hover .legend-text,
+.legend-item[data-type="meta"]:hover .legend-value {
+    color: #0d6efd !important;
+    font-weight: 600;
 }
 
 .summary-details {
@@ -1193,15 +1231,6 @@ body {
         width: 8px;
         height: 8px;
     }
-    
-    .legend-text {
-        font-size: 0.7rem;
-    }
-    
-    .legend-value {
-        padding: 1px 3px;
-        font-size: 0.65rem;
-    }
 }
 
 /* Mobile muito pequeno - ajustes extremos */
@@ -1225,8 +1254,8 @@ body {
         font-size: 0.65rem;
     }
     
-    .legend-value {
-        font-size: 0.6rem;
-        padding: 0px 2px;
-    }
+.legend-value {
+    font-size: 0.6rem;
+    padding: 0px 2px;
+}
 }

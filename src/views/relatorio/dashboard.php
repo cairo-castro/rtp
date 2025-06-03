@@ -1,4 +1,3 @@
-
 <div class="dashboard-wrapper">
     <div class="dashboard-container">
         <!-- Formulário principal -->
@@ -88,7 +87,7 @@
                                             
                                             <div class="gauge-container">
                                                 <div id="gauge<?php echo $indiceGrafico; ?>"></div><div class="gauge-info">
-                                                    <div class="gauge-value"><?php echo formatarNumero($total_executados); ?></div>
+                                                    <div class="gauge-value" style="color: <?php echo htmlspecialchars($service_color); ?>;"><?php echo formatarNumero($total_executados); ?></div>
                                                     <div class="gauge-percent"><?php echo formatarNumero($progresso, 2); ?>%</div>
                                                 </div>
                                             </div><div class="summary-details">
@@ -222,7 +221,8 @@ function showLegendTooltip(element, type) {
     tooltip.style.left = (rect.left + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
     tooltip.style.top = (rect.top - tooltip.offsetHeight - 8) + 'px';
     
-    // Remover tooltip após 2 segundos    setTimeout(() => {
+    // Remover tooltip após 2 segundos
+    setTimeout(() => {
         if (tooltip.parentNode) {
             tooltip.remove();
         }

@@ -629,6 +629,146 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (error) {
             PerformanceMonitor.end(`chart_${elementId}`);
             console.error(`❌ Erro ao criar gráfico ApexCharts para ${elementId}:`, error);
+        }    }
+
+    /**
+     * Adiciona informações complementares ao gauge após renderização
+     * @param {string} elementId - ID do elemento do gauge
+     * @param {Object} dados - Dados do gauge
+     * @param {number} dados.percentualRealizado - Percentual realizado
+     * @param {number} dados.percentualPactuado - Percentual pactuado
+     * @param {number} dados.totalExecutados - Total de executados
+     * @param {number} dados.totalPactuado - Total pactuado
+     * @param {number} dados.metaPdt - Meta PDT
+     */
+    function adicionarInformacoesGauge(elementId, dados) {
+        try {
+            const gaugeContainer = document.querySelector(`#${elementId}`);
+            if (!gaugeContainer) {
+                debugLog(`⚠️ Container do gauge ${elementId} não encontrado`);
+                return;
+            }
+            
+            // Encontrar container do gauge-info
+            const gaugeInfo = gaugeContainer.closest('.gauge-summary')?.querySelector('.gauge-info');
+            if (!gaugeInfo) {
+                debugLog(`⚠️ Gauge info não encontrado para ${elementId}`);
+                return;
+            }
+            
+            // Atualizar valores se necessário
+            const gaugeValue = gaugeInfo.querySelector('.gauge-value');
+            const gaugePercent = gaugeInfo.querySelector('.gauge-percent');
+            
+            if (gaugeValue) {
+                gaugeValue.textContent = dados.totalExecutados.toLocaleString('pt-BR');
+            }
+            
+            if (gaugePercent) {
+                gaugePercent.textContent = `${dados.percentualRealizado.toFixed(1)}%`;
+            }
+            
+            debugLog(`✅ Informações do gauge atualizadas para ${elementId}`, dados);
+            
+        } catch (error) {
+            console.error(`❌ Erro ao adicionar informações do gauge ${elementId}:`, error);
+        }
+    }
+
+    /**
+     * Aplica cores dinâmicas do gauge à legenda correspondente
+     * @param {string} elementId - ID do elemento do gauge
+     * @param {Object} cores - Objeto com as cores do gauge
+     * @param {string} cores.corRealizado - Cor para "Realizado"
+     * @param {string} cores.corMeta - Cor para "Meta PDT"
+     */
+    function aplicarCoresDinamicasLegenda(elementId, cores) {
+        try {
+            // Encontrar o container do gauge
+            const gaugeContainer = document.querySelector(`#${elementId}`);
+            if (!gaugeContainer) {
+                debugLog(`⚠️ Container do gauge ${elementId} não encontrado`);
+                return;
+            }
+            
+            // Encontrar o container de summary que contém a legenda
+            const summaryContainer = gaugeContainer.closest('.gauge-summary');
+            if (!summaryContainer) {
+                debugLog(`⚠️ Container de summary para ${elementId} não encontrado`);
+                return;
+            }
+            
+            // Aplicar cor dinâmica ao indicador "Realizado"
+            const realizadoColor = summaryContainer.querySelector('.legend-color.realizado-color');
+            if (realizadoColor) {
+                realizadoColor.style.backgroundColor = cores.corRealizado;
+                realizadoColor.setAttribute('data-dynamic-color', cores.corRealizado);
+                debugLog(`🎨 Cor "Realizado" aplicada: ${cores.corRealizado}`);
+            }
+            
+            // Aplicar cor ao indicador "Meta PDT" (sempre azul)
+            const metaColor = summaryContainer.querySelector('.legend-color.meta-color');
+            if (metaColor) {
+                metaColor.style.backgroundColor = cores.corMeta;
+                metaColor.setAttribute('data-dynamic-color', cores.corMeta);
+                debugLog(`🎨 Cor "Meta PDT" aplicada: ${cores.corMeta}`);
+            }
+            
+            // Aplicar eventos de hover dinâmicos
+            const realizadoItem = summaryContainer.querySelector('.legend-item[data-type="realizado"]');
+            if (realizadoItem) {
+                // Remover eventos anteriores
+                realizadoItem.replaceWith(realizadoItem.cloneNode(true));
+                const novoRealizadoItem = summaryContainer.querySelector('.legend-item[data-type="realizado"]');
+                
+                // Aplicar novos eventos com cores dinâmicas
+                novoRealizadoItem.addEventListener('mouseenter', function() {
+                    // Converter hex para rgba com 10% de opacidade
+                    const rgba = hexToRgba(cores.corRealizado, 0.1);
+                    this.style.backgroundColor = rgba;
+                    
+                    const text = this.querySelector('.legend-text');
+                    const value = this.querySelector('.legend-value');
+                    if (text) text.style.color = cores.corRealizado;
+                    if (value) value.style.color = cores.corRealizado;
+                });
+                
+                novoRealizadoItem.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = '';
+                    const text = this.querySelector('.legend-text');
+                    const value = this.querySelector('.legend-value');
+                    if (text) text.style.color = '';
+                    if (value) value.style.color = '';
+                });
+            }
+            
+            debugLog(`✅ Cores dinâmicas aplicadas à legenda ${elementId}`, cores);
+            
+        } catch (error) {
+            console.error(`❌ Erro ao aplicar cores dinâmicas à legenda ${elementId}:`, error);
+        }
+    }
+
+    /**
+     * Converte cor hexadecimal para rgba com opacidade
+     * @param {string} hex - Cor em formato hex (#ffffff)
+     * @param {number} alpha - Valor de opacidade (0-1)
+     * @returns {string} Cor em formato rgba
+     */
+    function hexToRgba(hex, alpha) {
+        try {
+            // Remove o # se presente
+            hex = hex.replace('#', '');
+            
+            // Converte para RGB
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        } catch (error) {
+            // Fallback para cor padrão
+            return `rgba(253, 126, 20, ${alpha})`;
         }
     }
 
@@ -638,46 +778,46 @@ document.addEventListener("DOMContentLoaded", function () {
      * @function criarGaugeApex
      * @param {Object} dados - Dados do serviço
      * @param {string} elementId - ID do elemento
-     */    function criarGaugeApex(dados, elementId) {
+     */function criarGaugeApex(dados, elementId) {
         PerformanceMonitor.start(`gauge_${elementId}`);
         
         try {
-            // CORREÇÃO: Calcular total realizado a partir dos dados diários para garantir precisão
+            // Calcular total realizado a partir dos dados diários
             let totalRealizado = 0;
-            let totalPactuado = 0;
-            
             if (dados.dadosDiarios && Array.isArray(dados.dadosDiarios)) {
                 totalRealizado = dados.dadosDiarios.reduce((sum, dia) => {
                     return sum + (parseInt(dia.realizado) || 0);
                 }, 0);
-                
-                totalPactuado = dados.dadosDiarios.reduce((sum, dia) => {
-                    return sum + (parseInt(dia.pactuado) || 0);
-                }, 0);
             }
             
-            // Usar dados diários como fonte principal, fallback para dados.total_executados
             const totalExecutados = totalRealizado > 0 ? totalRealizado : (parseInt(dados.total_executados) || 0);
-            const metaPdt = parseInt(dados.meta_pdt) || 0;
-            const progressoRealizado = metaPdt > 0 ? Math.min(100, Math.round((totalExecutados / metaPdt) * 100)) : 0;
-              const progressoPactuado = metaPdt > 0 ? Math.min(100, Math.round((totalPactuado / metaPdt) * 100)) : 0;
+            const totalPactuado = parseInt(dados.total_pactuado) || 0;
+            const metaPdt = parseInt(dados.meta_pdt) || 1;
             
-            // DEBUG: Log dos valores para verificação
             debugLog(`📊 GAUGE ${elementId} - Dados calculados:`, {
                 totalRealizado: totalRealizado,
                 totalExecutados: totalExecutados,
                 totalPactuado: totalPactuado,
                 metaPdt: metaPdt,
-                progressoRealizado: progressoRealizado,
-                progressoPactuado: progressoPactuado,
-                fonte_total_executados: dados.total_executados
+                grupoCor: dados.grupo_cor
             });
             
+            const progressoRealizado = Math.min((totalExecutados / metaPdt) * 100, 100);
+            const progressoPactuado = Math.min((totalPactuado / metaPdt) * 100, 100);
+            
+            // Usar cor do grupo para "Realizado" ou cor padrão
             let corRealizado = CORES_SISTEMA.realizado;
             if (dados.grupo_cor && dados.grupo_cor !== '#6B7280') {
                 corRealizado = dados.grupo_cor;
             }
-
+            
+            debugLog(`🔢 GAUGE CONCÊNTRICO PARA ${elementId}:`, {
+                realizadoPercent: progressoRealizado,
+                pactuadoPercent: progressoPactuado,
+                corRealizado: corRealizado,
+                corMeta: CORES_SISTEMA.pactuado
+            });
+            
             const opcoes = {
                 chart: {
                     type: 'radialBar',
@@ -780,6 +920,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         totalPactuado: totalPactuado,
                         metaPdt: metaPdt
                     });
+                    
+                    // NOVO: Aplicar cores dinâmicas do gauge à legenda
+                    aplicarCoresDinamicasLegenda(elementId, {
+                        corRealizado: corRealizado,
+                        corMeta: CORES_SISTEMA.pactuado
+                    });
+                    
                 }, 300);
                 
                 PerformanceMonitor.end(`gauge_${elementId}`);
@@ -794,59 +941,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error(`❌ Erro ao criar gauge ApexCharts para ${elementId}:`, error);
         }
     }
-
-    /**
-     * Adiciona informações customizadas ao gauge concêntrico
-     * Mantém apenas valores nas extremidades (0 e meta) - legends e percentual removidos
-     */
-    function adicionarInformacoesGauge(elementId, dados) {
-        try {
-            const container = document.querySelector(`#${elementId}`);
-            if (!container) return;
-
-            // Remover informações anteriores se existirem
-            container.querySelectorAll('.gauge-custom-info').forEach(el => el.remove());
-
-            // Posicionar container como relativo
-            container.style.position = 'relative';
-
-            // 1. Número na extremidade esquerda (0)
-            const leftNumber = document.createElement('div');
-            leftNumber.className = 'gauge-custom-info';
-            leftNumber.style.cssText = `
-                position: absolute;
-                bottom: 45px;
-                left: 35px;
-                font-size: 12px;
-                color: #999;
-                font-weight: normal;
-            `;
-            leftNumber.innerHTML = '0';
-
-            // 2. Número na extremidade direita (meta)
-            const rightNumber = document.createElement('div');
-            rightNumber.className = 'gauge-custom-info';
-            rightNumber.style.cssText = `
-                position: absolute;
-                bottom: 45px;
-                right: 35px;
-                font-size: 12px;
-                color: #999;
-                font-weight: normal;
-            `;
-            rightNumber.innerHTML = dados.metaPdt.toString();
-
-            // Adicionar apenas os números das extremidades ao container
-            container.appendChild(leftNumber);
-            container.appendChild(rightNumber);
-
-            debugLog(`✅ Informações simplificadas adicionadas para ${elementId} (apenas extremidades: 0 e ${dados.metaPdt})`);
-
-        } catch (error) {
-            console.error(`❌ Erro ao adicionar informações customizadas:`, error);
-        }
-    }
-
     /**
      * Função para redimensionar gráficos com debouncing otimizado
      * Evita múltiplas chamadas durante redimensionamento da janela
