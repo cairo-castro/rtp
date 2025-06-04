@@ -1458,3 +1458,39 @@ body {
     padding: 0px 2px;
 }
 }
+
+/* Informações do usuário logado */
+.user-info {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: rgba(13, 110, 253, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(13, 110, 253, 0.2);
+}
+
+.user-details {
+    text-align: right;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-blue);
+    margin-bottom: 2px;
+}
+
+.user-status {
+    font-size: 0.75rem;
+    color: var(--primary-green);
+    font-weight: 500;
+}
+
+/* Dica de unidade selecionada automaticamente */
+.auto-selected-hint {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--primary-blue);
+    font-style: italic;
+    margin-top: 2px;
+}

@@ -1,5 +1,8 @@
 <?php
 
+// Incluir gerenciamento de sessão
+require_once __DIR__ . '/../config/session.php';
+
 /**
  * Controller responsável pelos relatórios de produtividade
  * 
@@ -34,7 +37,9 @@ class RelatorioController extends Controller {
                 'relatorio_por_grupos' => [],
                 'unidade_nome' => '',
                 'produtividade_geral' => 0,
-                'dados_graficos' => []
+                'dados_graficos' => [],
+                'user_logged_in' => $inputData['user_logged_in'],
+                'user_info' => $inputData['user_info']
             ];
             
             // Processar dados se unidade foi selecionada
@@ -59,9 +64,9 @@ class RelatorioController extends Controller {
                 'dados_graficos' => []
             ]);
         }
-    }
-      /**
+    }    /**
      * Valida e obtém dados de entrada
+     * Automaticamente usa a unidade do usuário logado se disponível
      * 
      * @return array
      */
@@ -70,10 +75,21 @@ class RelatorioController extends Controller {
         $ano = $_GET['ano'] ?? date('Y');
         $mes = $_GET['mes'] ?? date('m');
         
+        // Se não foi especificada unidade via GET e o usuário está logado,
+        // usar automaticamente a unidade do usuário
+        if (empty($unidade) && isUserLoggedIn()) {
+            $userUnidade = getUserUnidade();
+            if ($userUnidade) {
+                $unidade = (string)$userUnidade;
+            }
+        }
+        
         return [
             'unidade' => $unidade,
             'ano' => (int)$ano,
-            'mes' => (int)$mes
+            'mes' => (int)$mes,
+            'user_logged_in' => isUserLoggedIn(),
+            'user_info' => getUserInfo()
         ];
     }
       

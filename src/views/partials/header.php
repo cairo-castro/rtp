@@ -34,8 +34,7 @@
                 </select>
             </div>
         </div>
-        
-        <div class="productivity-summary">
+          <div class="productivity-summary">
             <?php if (isset($produtividade_geral)): ?>
             <div class="productivity-value" aria-label="Produtividade atual">
                 <?php echo formatarNumero($produtividade_geral, 2); ?>%
@@ -45,12 +44,21 @@
             <div class="productivity-label">Produtividade</div>
             <?php endif; ?>
         </div>
+        
+        <!-- Informações do usuário logado -->
+        <?php if (isset($user_logged_in) && $user_logged_in && isset($user_info)): ?>
+        <div class="user-info">
+            <div class="user-details">
+                <div class="user-name"><?php echo htmlspecialchars($user_info['nome'] ?? 'Usuário'); ?></div>
+                <div class="user-status">Logado</div>
+            </div>
+        </div>
+        <?php endif; ?>
         </div>
     </div>
       <!-- Segunda linha do header - Seleção de Unidade e Pesquisa -->
     <div class="header-wrapper">
-        <div class="header-second-row">
-            <div class="unit-filter">
+        <div class="header-second-row">            <div class="unit-filter">
                 <label for="unidade">Unidade:</label>
                 <select name="unidade" id="unidade" class="unit-select" onchange="document.getElementById('mainForm').submit();" aria-label="Selecionar unidade">
                     <option value="">Selecione a Unidade</option>
@@ -58,10 +66,16 @@
                         <?php foreach ($unidades as $u) { ?>
                             <option value="<?php echo $u['id']; ?>" <?php echo (isset($unidade) && $unidade == $u['id']) ? 'selected' : ''; ?>>
                                 <?php echo htmlspecialchars($u['nome']); ?>
+                                <?php if (isset($user_logged_in) && $user_logged_in && isset($user_info) && $user_info['unidade_id'] == $u['id']): ?>
+                                    (Sua unidade)
+                                <?php endif; ?>
                             </option>
                         <?php } ?>
                     <?php endif; ?>
                 </select>
+                <?php if (isset($user_logged_in) && $user_logged_in && !empty($unidade)): ?>
+                    <small class="auto-selected-hint">Unidade selecionada automaticamente</small>
+                <?php endif; ?>
             </div>
             
             <!-- Nova barra de pesquisa -->
