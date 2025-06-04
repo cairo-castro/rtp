@@ -34,20 +34,13 @@ document.addEventListener("DOMContentLoaded", function () {
      * @constant {boolean} DEBUG_MODE
      */
     const DEBUG_MODE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    
-    /**
-     * Função de log condicional para debugging
-     * Só executa console.log em ambiente de desenvolvimento
-     * @param {string} message - Mensagem a ser logada
-     * @param {*} data - Dados opcionais para log
+      /**
+     * Debug removido para produção
+     * Sistema otimizado sem logs de desenvolvimento
      */
-    function debugLog(message, data) {
-        if (DEBUG_MODE) {
-            console.log(message, data || '');
-        }
-    }
+    // debugLog function removed for production
 
-    debugLog('🚀 ApexCharts Dashboard carregado!');
+    // Debug: Dashboard carregado (removed for production)
 
     /**
      * Armazena dados dos labels para reposicionamento responsivo
@@ -112,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 });
                 
-                debugLog(`✅ Labels customizados adicionados para ${elementId}`, diasSemana);
+                // Debug: Labels customizados adicionados (removed for production)
             }, 50); // Pequeno delay para garantir renderização completa
             
         } catch (error) {
@@ -274,11 +267,10 @@ document.addEventListener("DOMContentLoaded", function () {
             
             const duration = performance.now() - this.timers[name];
             delete this.timers[name];
+              // Debug: Performance monitoring (removed for production)
             
-            debugLog(`⏱️ Performance ${name}:`, `${duration.toFixed(2)}ms`);
-            
-            // Alertar se performance estiver ruim (>150ms) - limite reduzido para mais rigor
-            if (duration > 150) {
+            // Alertar se performance estiver ruim (>150ms) - apenas em desenvolvimento
+            if (duration > 150 && location.hostname === 'localhost') {
                 console.warn(`⚠️ Performance lenta em ${name}: ${duration.toFixed(2)}ms`);
             }
             
@@ -327,7 +319,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Usar updateOptions otimizado para reutilização
                 chart.updateOptions(options, false, false, false); // Sem animação, sem redraw, sem recalculo
                 this.usage.reused++;
-                debugLog(`♻️ Gráfico ${type} reutilizado do pool para ${elementId}`);
+                // Debug: Chart reused from pool (removed for production)
                 return chart;
             }
             
@@ -340,7 +332,7 @@ document.addEventListener("DOMContentLoaded", function () {
             
             const chart = new ApexCharts(element, options);
             this.usage.created++;
-            debugLog(`🆕 Novo gráfico ${type} criado para ${elementId}`);
+            // Debug: New chart created (removed for production)
             return chart;
         }
     };
@@ -374,7 +366,7 @@ document.addEventListener("DOMContentLoaded", function () {
             element.style.opacity = '1';
         });
         
-        debugLog(`📱 Visibilidade forçada para elementos móveis em ${elementId}`);
+        // Debug log removed for production
     }
 
     /**
@@ -390,7 +382,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const xAxisLabels = chartContainer.querySelectorAll('.apexcharts-xaxis-texts-g text');
         
         if (customLabels.length !== xAxisLabels.length) {
-            debugLog(`⚠️ Inconsistência de labels em ${elementId}: ${customLabels.length} custom vs ${xAxisLabels.length} xaxis`);
+            // Debug log removed for production
             
             // Recriar labels se necessário
             const diasSemana = labelsData.get(elementId);
@@ -408,12 +400,12 @@ document.addEventListener("DOMContentLoaded", function () {
      * @function initializeCharts
      */
     if (window.dadosGraficos) {
-        debugLog('📊 Dados recebidos para gráficos:', window.dadosGraficos);
+        // Debug log removed for production
         
         // Implementar lazy loading com IntersectionObserver para performance
         initializeLazyCharts();
     } else {
-        debugLog('⏳ Aguardando dados dos gráficos...');
+        // Debug log removed for production
     }
 
     /**
@@ -442,7 +434,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 chartObserver.observe(element);
             });
             
-            debugLog('✅ Lazy loading configurado para', chartElements.length, 'gráficos');
+            // Debug log removed for production
         } else {
             // Fallback para navegadores sem IntersectionObserver
             chartElements.forEach(element => {
@@ -463,12 +455,12 @@ document.addEventListener("DOMContentLoaded", function () {
             const gaugeId = `gauge${dados.id}`;
             
             if (elementId === graficoId && dados.dadosDiarios) {
-                debugLog(`✅ Criando gráfico de barras ApexCharts para ${graficoId}`);
+                // Debug log removed for production
                 criarGraficoBarrasApex(dados, graficoId);
             }
             
             if (elementId === gaugeId) {
-                debugLog(`✅ Criando gauge ApexCharts para ${gaugeId}`);
+                // Debug log removed for production
                 criarGaugeApex(dados, gaugeId);
             }
         });
@@ -620,7 +612,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
                 
                 PerformanceMonitor.end(`chart_${elementId}`);
-                debugLog(`✅ Gráfico de barras ApexCharts criado para ${elementId}`);
+                // Debug log removed for production
             }).catch(error => {
                 PerformanceMonitor.end(`chart_${elementId}`);
                 console.error(`❌ Erro ao renderizar gráfico para ${elementId}:`, error);
@@ -645,14 +637,14 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const gaugeContainer = document.querySelector(`#${elementId}`);
             if (!gaugeContainer) {
-                debugLog(`⚠️ Container do gauge ${elementId} não encontrado`);
+                // Debug log removed for production
                 return;
             }
             
             // Encontrar container do gauge-info
             const gaugeInfo = gaugeContainer.closest('.gauge-summary')?.querySelector('.gauge-info');
             if (!gaugeInfo) {
-                debugLog(`⚠️ Gauge info não encontrado para ${elementId}`);
+                // Debug log removed for production
                 return;
             }
             
@@ -668,7 +660,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 gaugePercent.textContent = `${dados.percentualRealizado.toFixed(1)}%`;
             }
             
-            debugLog(`✅ Informações do gauge atualizadas para ${elementId}`, dados);
+            // Debug log removed for production
             
         } catch (error) {
             console.error(`❌ Erro ao adicionar informações do gauge ${elementId}:`, error);
@@ -687,14 +679,14 @@ document.addEventListener("DOMContentLoaded", function () {
             // Encontrar o container do gauge
             const gaugeContainer = document.querySelector(`#${elementId}`);
             if (!gaugeContainer) {
-                debugLog(`⚠️ Container do gauge ${elementId} não encontrado`);
+                // Debug log removed for production
                 return;
             }
             
             // Encontrar o container de summary que contém a legenda
             const summaryContainer = gaugeContainer.closest('.gauge-summary');
             if (!summaryContainer) {
-                debugLog(`⚠️ Container de summary para ${elementId} não encontrado`);
+                // Debug log removed for production
                 return;
             }
             
@@ -703,7 +695,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (realizadoColor) {
                 realizadoColor.style.backgroundColor = cores.corRealizado;
                 realizadoColor.setAttribute('data-dynamic-color', cores.corRealizado);
-                debugLog(`🎨 Cor "Realizado" aplicada: ${cores.corRealizado}`);
+                // Debug log removed for production
             }
             
             // Aplicar cor ao indicador "Meta PDT" (sempre azul)
@@ -711,7 +703,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (metaColor) {
                 metaColor.style.backgroundColor = cores.corMeta;
                 metaColor.setAttribute('data-dynamic-color', cores.corMeta);
-                debugLog(`🎨 Cor "Meta PDT" aplicada: ${cores.corMeta}`);
+                // Debug log removed for production
             }
             
             // Aplicar eventos de hover dinâmicos
@@ -742,7 +734,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             }
             
-            debugLog(`✅ Cores dinâmicas aplicadas à legenda ${elementId}`, cores);
+            // Debug log removed for production
             
         } catch (error) {
             console.error(`❌ Erro ao aplicar cores dinâmicas à legenda ${elementId}:`, error);
@@ -789,34 +781,33 @@ document.addEventListener("DOMContentLoaded", function () {
                     return sum + (parseInt(dia.realizado) || 0);
                 }, 0);
             }
-            
-            const totalExecutados = totalRealizado > 0 ? totalRealizado : (parseInt(dados.total_executados) || 0);
+              const totalExecutados = totalRealizado > 0 ? totalRealizado : (parseInt(dados.total_executados) || 0);
             const totalPactuado = parseInt(dados.total_pactuado) || 0;
             const metaPdt = parseInt(dados.meta_pdt) || 1;
-            
-            debugLog(`📊 GAUGE ${elementId} - Dados calculados:`, {
-                totalRealizado: totalRealizado,
-                totalExecutados: totalExecutados,
-                totalPactuado: totalPactuado,
-                metaPdt: metaPdt,
-                grupoCor: dados.grupo_cor
-            });
-            
+              // Debug: Gauge data calculated (removed for production)
+              // Primeiro gauge (interno): Realizado vs Meta PDT
             const progressoRealizado = Math.min((totalExecutados / metaPdt) * 100, 100);
-            const progressoPactuado = Math.min((totalPactuado / metaPdt) * 100, 100);
+            
+            // Segundo gauge (externo): Realizado vs Pactuado
+            const progressoPactuado = totalPactuado > 0 ? Math.min((totalExecutados / totalPactuado) * 100, 100) : 0;
+            
+            // Debug apenas em desenvolvimento
+            if (DEBUG_MODE) {
+                console.log(`Gauge ${elementId}:`, {
+                    totalExecutados,
+                    totalPactuado,
+                    metaPdt,
+                    progressoRealizado: progressoRealizado.toFixed(2) + '%',
+                    progressoPactuado: progressoPactuado.toFixed(2) + '%'
+                });
+            }
             
             // Usar cor do grupo para "Realizado" ou cor padrão
             let corRealizado = CORES_SISTEMA.realizado;
             if (dados.grupo_cor && dados.grupo_cor !== '#6B7280') {
                 corRealizado = dados.grupo_cor;
             }
-            
-            debugLog(`🔢 GAUGE CONCÊNTRICO PARA ${elementId}:`, {
-                realizadoPercent: progressoRealizado,
-                pactuadoPercent: progressoPactuado,
-                corRealizado: corRealizado,
-                corMeta: CORES_SISTEMA.pactuado
-            });
+              // Debug: Gauge concentrico data (removed for production)
             
             const opcoes = {
                 chart: {
@@ -930,7 +921,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, 300);
                 
                 PerformanceMonitor.end(`gauge_${elementId}`);
-                debugLog(`✅ Gauge concêntrico criado para ${elementId} - Realizado: ${progressoRealizado}%, Pactuado: ${progressoPactuado}%`);
+                // Debug log removed for production
             }).catch(error => {
                 PerformanceMonitor.end(`gauge_${elementId}`);
                 console.error(`❌ Erro ao renderizar gauge para ${elementId}:`, error);
@@ -967,7 +958,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, 150);
                 
                 PerformanceMonitor.end('resize_all_charts');
-                debugLog('🔄 Gráficos redimensionados, labels reposicionados e visibilidade garantida');
+                // Debug log removed for production
             }
         }, 100);
     };
@@ -984,7 +975,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 validarECorrigirLabels(elementId);
             }, 100);
         });
-        debugLog('🏷️ Labels customizados reposicionados e validados para responsividade');
+        // Debug log removed for production
     }
 
     // Event listeners
@@ -1008,27 +999,378 @@ document.addEventListener("DOMContentLoaded", function () {
             setTimeout(() => {
                 reposicionarLabelsCustomizados();
             }, 100);
-        }
-    });
+        }    });
 
     // Debug: Informações sobre grupos (se disponível)
     if (window.gruposInfo) {
-        debugLog('📋 Informações dos grupos:', window.gruposInfo);
-        if (DEBUG_MODE) {
-            window.gruposInfo.forEach(grupo => {
-                console.log(`🏥 Grupo ${grupo.id}: ${grupo.nome} (${grupo.servicos_count} serviços) - Cor: ${grupo.cor}`);
-            });
-        }
+        // Debug: Groups info collected (removed for production)
+        window.gruposInfo.forEach(grupo => {
+            // Debug: Group info (removed for production)
+        });
+    }
+
+    // ===== FUNCIONALIDADE DE PESQUISA ===== 
+    try {
+        initializeSearch();
+    } catch (error) {
+        console.error('❌ Erro ao inicializar sistema de pesquisa:', error);
     }
 
     // Exportar utilitários para uso global se necessário
     window.RTDashboard = {
         PerformanceMonitor,
         ChartPool,
-        debugLog,
         isMobile,
         redimensionarGraficos: window.redimensionarGraficos
     };
 
-    debugLog('🎉 RTP Hospital Dashboard completamente inicializado!');
+    // Debug: Dashboard initialization complete (removed for production)
 });
+
+// ===== SISTEMA DE PESQUISA PERFORMÁTICO =====
+
+/**
+ * Inicializa o sistema de pesquisa
+ */
+function initializeSearch() {
+    const searchInput = document.getElementById('search');
+    const clearButton = document.getElementById('clearSearch');
+    const searchResults = document.getElementById('searchResults');
+    
+    if (!searchInput || !clearButton || !searchResults) {
+        return; // Elementos não encontrados
+    }
+
+    let searchTimeout;
+    let searchData = [];    // Coletar dados de grupos e serviços para pesquisa
+    function collectSearchData() {
+        searchData = [];
+        
+        // Coletar dados dos grupos e serviços na página
+        const groupContainers = document.querySelectorAll('.group-container');
+        
+        groupContainers.forEach(container => {
+            const groupHeader = container.querySelector('.group-header h3');
+            const groupName = groupHeader ? groupHeader.textContent.trim() : '';
+            const groupColor = container.querySelector('.group-color-indicator')?.style.backgroundColor || '';
+            
+            if (groupName) {
+                // Adicionar grupo aos dados de pesquisa
+                searchData.push({
+                    type: 'grupo',
+                    name: groupName,
+                    element: container,
+                    color: groupColor
+                });
+            }
+            
+            // Coletar serviços dentro do grupo (corrigindo seletores)
+            const serviceSections = container.querySelectorAll('.service-section');
+            serviceSections.forEach(section => {
+                const serviceNameElement = section.querySelector('.service-header h3');
+                const serviceName = serviceNameElement ? serviceNameElement.textContent.trim() : '';
+                
+                if (serviceName) {                    searchData.push({
+                        type: 'serviço',
+                        name: serviceName,
+                        group: groupName,
+                        element: section,
+                        container: container,
+                        color: groupColor
+                    });
+                  }
+            });
+        });
+    }
+
+    // Realizar pesquisa com debounce
+    function performSearch(query) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            if (!query.trim()) {
+                hideSearchResults();
+                showAllItems();
+                return;
+            }
+
+            const results = searchInData(query);
+            displaySearchResults(results, query);
+            
+            if (results.length > 0) {
+                highlightSearchResults(query);
+            } else {
+                showAllItems();
+            }
+        }, 300);
+    }
+
+    // Buscar nos dados coletados
+    function searchInData(query) {
+        const searchTerm = query.toLowerCase().trim();
+        const results = [];
+        
+        searchData.forEach(item => {
+            const nameMatch = item.name.toLowerCase().includes(searchTerm);
+            const groupMatch = item.group && item.group.toLowerCase().includes(searchTerm);
+            
+            if (nameMatch || groupMatch) {
+                results.push({
+                    ...item,
+                    relevance: nameMatch ? 2 : 1 // Maior relevância para nome direto
+                });
+            }
+        });
+        
+        // Ordenar por relevância e tipo (grupos primeiro)
+        return results.sort((a, b) => {
+            if (a.type !== b.type) {
+                return a.type === 'grupo' ? -1 : 1;
+            }
+            return b.relevance - a.relevance;
+        });
+    }
+
+    // Exibir resultados da pesquisa
+    function displaySearchResults(results, query) {
+        if (results.length === 0) {
+            searchResults.innerHTML = '<div class="search-no-results">Nenhum resultado encontrado</div>';
+            searchResults.style.display = 'block';
+            return;
+        }
+
+        const html = results.map(result => {
+            const highlightedName = highlightText(result.name, query);
+            const typeLabel = result.type === 'grupo' ? 'Grupo' : 'Serviço';
+            const groupInfo = result.group && result.type === 'serviço' ? 
+                `<div class="search-result-group">Grupo: ${result.group}</div>` : '';
+            
+            return `
+                <div class="search-result-item" data-type="${result.type}" data-element-id="${getElementId(result.element)}">
+                    <div class="search-result-type">${typeLabel}</div>
+                    <div class="search-result-name">${highlightedName}</div>
+                    ${groupInfo}
+                </div>
+            `;
+        }).join('');
+
+        searchResults.innerHTML = html;
+        searchResults.style.display = 'block';        // Adicionar eventos de clique
+        searchResults.querySelectorAll('.search-result-item').forEach((item, index) => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                selectSearchResult(results[index]);
+            });
+        });
+    }
+
+    // Destacar texto na pesquisa
+    function highlightText(text, query) {
+        if (!query.trim()) return text;
+        
+        const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
+        return text.replace(regex, '<span class="search-highlight">$1</span>');
+    }
+
+    // Escapar caracteres especiais de regex
+    function escapeRegex(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // Obter ID único do elemento
+    function getElementId(element) {
+        return element.id || element.querySelector('[id]')?.id || Math.random().toString(36).substr(2, 9);
+    }    // Selecionar resultado da pesquisa
+    function selectSearchResult(result) {
+        hideSearchResults();
+        
+        // Filtrar para mostrar apenas o resultado selecionado
+        filterToShowOnlyResult(result);
+        
+        // Scrollar para o elemento após filtrar
+        if (result.element) {
+            setTimeout(() => {
+                result.element.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start'
+                });
+                
+                // Destacar temporariamente
+                highlightElement(result.element);
+            }, 100);
+        }
+        
+        // Manter o texto da pesquisa no campo para mostrar o que está filtrado
+        searchInput.value = result.name;
+    }
+
+    // Destacar elemento selecionado
+    function highlightElement(element) {
+        element.style.outline = '3px solid var(--primary-blue)';
+        element.style.outlineOffset = '2px';
+        
+        setTimeout(() => {
+            element.style.outline = '';
+            element.style.outlineOffset = '';
+        }, 3000);
+    }
+
+    // Ocultar resultados da pesquisa
+    function hideSearchResults() {
+        searchResults.style.display = 'none';
+        searchResults.innerHTML = '';
+    }    // Mostrar todos os itens (remover filtros)
+    function showAllItems() {
+        const groupContainers = document.querySelectorAll('.group-container');
+        groupContainers.forEach(container => {
+            container.style.display = 'block';
+            
+            const serviceSections = container.querySelectorAll('.service-section');
+            serviceSections.forEach(section => {
+                section.style.display = 'block';
+            });
+        });
+        
+        // Desativar indicador visual de filtro
+        setFilterActive(false);
+        
+        // Atualizar contador se existir
+        updateVisibilityCounter();
+    }// Filtrar para mostrar apenas o resultado selecionado
+    function filterToShowOnlyResult(result) {
+        const groupContainers = document.querySelectorAll('.group-container');
+        
+        groupContainers.forEach(container => {
+            const isTargetGroup = container === result.element || container.contains(result.element);
+            
+            if (result.type === 'grupo') {
+                // Se é um grupo, mostrar apenas este grupo
+                container.style.display = isTargetGroup ? 'block' : 'none';
+                
+                if (isTargetGroup) {
+                    // Mostrar todos os serviços do grupo selecionado
+                    const serviceSections = container.querySelectorAll('.service-section');
+                    serviceSections.forEach(section => {
+                        section.style.display = 'block';
+                    });
+                }
+            } else {
+                // Se é um serviço específico
+                if (isTargetGroup) {
+                    // Mostrar o grupo que contém o serviço
+                    container.style.display = 'block';
+                    
+                    // Ocultar todos os serviços exceto o selecionado
+                    const serviceSections = container.querySelectorAll('.service-section');
+                    serviceSections.forEach(section => {
+                        const isTargetService = section === result.element || section.contains(result.element);
+                        section.style.display = isTargetService ? 'block' : 'none';
+                    });
+                } else {
+                    // Ocultar grupos que não contêm o serviço
+                    container.style.display = 'none';
+                }
+            }
+        });
+        
+        // Ativar indicador visual de filtro
+        setFilterActive(true);
+        
+        // Atualizar contador se existir
+        updateVisibilityCounter();
+    }    // Atualizar contador de itens visíveis (opcional)
+    function updateVisibilityCounter() {        const visibleGroups = document.querySelectorAll('.group-container[style*="block"], .group-container:not([style*="none"])').length;
+        const visibleServices = document.querySelectorAll('.service-section[style*="block"], .service-section:not([style*="none"])').length;
+          // Contador disponível para debug se necessário
+        // Debug removido para produção
+    }
+
+    // Controlar indicador visual de filtro ativo
+    function setFilterActive(active) {
+        const searchFilter = document.querySelector('.search-filter');
+        const searchInput = document.querySelector('.search-input');
+        
+        if (active) {
+            searchFilter?.classList.add('active');
+            searchInput?.classList.add('filtered');
+        } else {
+            searchFilter?.classList.remove('active');
+            searchInput?.classList.remove('filtered');
+        }
+    }    // Destacar resultados da pesquisa na página
+    function highlightSearchResults(query) {
+        const searchTerm = query.toLowerCase().trim();
+        const groupContainers = document.querySelectorAll('.group-container');
+        
+        groupContainers.forEach(container => {
+            const groupName = container.querySelector('.group-header h3')?.textContent.toLowerCase() || '';
+            let hasVisibleServices = false;
+            
+            // Verificar serviços
+            const serviceSections = container.querySelectorAll('.service-section');
+            serviceSections.forEach(section => {
+                const serviceName = section.querySelector('.service-header h3')?.textContent.toLowerCase() || '';
+                const matches = serviceName.includes(searchTerm) || groupName.includes(searchTerm);
+                
+                section.style.display = matches ? 'block' : 'none';
+                if (matches) hasVisibleServices = true;
+            });
+            
+            // Mostrar/ocultar grupo baseado nos serviços visíveis ou se o nome do grupo corresponde
+            const groupMatches = groupName.includes(searchTerm);
+            container.style.display = (hasVisibleServices || groupMatches) ? 'block' : 'none';
+        });
+    }    // Event listeners
+    searchInput.addEventListener('input', (e) => {
+        const value = e.target.value.trim();
+        
+        if (value === '') {
+            // Campo limpo - mostrar todos os itens
+            hideSearchResults();
+            showAllItems();
+        } else {
+            // Continuar com a pesquisa normal
+            performSearch(value);
+        }
+    });
+
+    searchInput.addEventListener('focus', () => {
+        if (!searchData.length) {
+            collectSearchData();
+        }
+    });
+
+    clearButton.addEventListener('click', () => {
+        searchInput.value = '';
+        hideSearchResults();
+        showAllItems();
+        searchInput.focus();
+    });
+
+    // Fechar resultados ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-filter')) {
+            hideSearchResults();
+        }
+    });    // Atalho de teclado para pesquisa (Ctrl+F ou Alt+S)
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey && e.key === 'f') || (e.altKey && e.key === 's')) {
+            e.preventDefault();
+            searchInput.focus();
+        }
+        
+        // ESC para limpar pesquisa (funciona sempre)
+        if (e.key === 'Escape') {
+            if (searchInput.value.trim() !== '' || searchResults.style.display === 'block') {
+                e.preventDefault();
+                searchInput.value = '';
+                hideSearchResults();
+                showAllItems();
+                searchInput.blur();
+            }
+        }
+    });
+
+    // Coletar dados iniciais
+    setTimeout(collectSearchData, 1000);
+}

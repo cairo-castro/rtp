@@ -195,6 +195,150 @@ body {
     min-width: 250px;
 }
 
+/* ===== BARRA DE PESQUISA ===== */
+.search-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 30px;
+    position: relative;
+}
+
+.search-filter label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.search-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    padding: 8px 35px 8px 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background-color: var(--white);
+    width: 280px;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.1);
+}
+
+.clear-search {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #999;
+    cursor: pointer;
+    padding: 2px 4px;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.clear-search:hover {
+    color: #666;
+}
+
+/* Indicador de filtro ativo */
+.search-input.filtered {
+    background-color: #fff3cd;
+    border-color: #ffc107;
+    color: #856404;
+}
+
+.search-input.filtered:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+}
+
+.search-filter.active::after {
+    content: "🔍 Filtro ativo";
+    position: absolute;
+    top: -25px;
+    left: 0;
+    font-size: 0.75rem;
+    color: #856404;
+    background-color: #fff3cd;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid #ffc107;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: var(--white);
+    border: 1px solid var(--border-light);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-result-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover {
+    background-color: #f8f9fa;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-type {
+    font-size: 0.8rem;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.search-result-name {
+    font-weight: 500;
+    color: var(--dark-text);
+}
+
+.search-result-group {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 2px;
+}
+
+.search-highlight {
+    background-color: #fff3cd;
+    padding: 1px 2px;
+    border-radius: 2px;
+}
+
+/* Estado quando não há resultados */
+.search-no-results {
+    padding: 16px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
 /* ===== SISTEMA DE ABAS INFORMATIVAS PARA GRUPOS ===== */
 
 /* Container principal - layout original mantido com abas laterais */
@@ -511,10 +655,6 @@ body {
 }
 
 /* Hover effects dinâmicos */
-.legend-item[data-type="realizado"] {
-    /* Hover será aplicado dinamicamente */
-}
-
 .legend-item[data-type="meta"]:hover {
     background-color: rgba(13, 110, 253, 0.1); /* Fundo azul claro no hover */
 }
@@ -916,12 +1056,71 @@ body {
     
     .unit-filter label {
         font-size: 0.8rem;
-    }
-    
-    .unit-select {
+    }    .unit-select {
         padding: 6px 8px;
         font-size: 0.8rem;
         max-width: 250px;
+    }
+    
+    /* Estilos responsivos para pesquisa em mobile */
+    .header-second-row {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    
+    .search-filter {
+        margin-left: 0;
+        gap: 6px;
+    }
+    
+    .search-filter label {
+        font-size: 0.8rem;
+    }
+    
+    .search-input {
+        width: 100%;
+        max-width: none;
+        padding: 6px 30px 6px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .search-results {
+        max-height: 200px;
+        left: 0;
+        right: 0;
+    }
+    
+    .search-result-item {
+        padding: 10px 12px;
+    }
+    
+    .search-result-name {
+        font-size: 0.9rem;
+    }
+    
+    .search-result-group {
+        font-size: 0.8rem;
+    }
+    
+    /* Estilos responsivos para pesquisa em tablets */
+    .search-filter {
+        margin-left: 20px;
+        gap: 8px;
+    }
+    
+    .search-filter label {
+        font-size: 0.8rem;
+    }
+    
+    .search-input {
+        width: 220px;
+        padding: 6px 30px 6px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .search-results {
+        max-height: 250px;
     }
       /* Melhoria para gráficos em telas muito pequenas */    .chart-container {
         height: 270px; /* Aumentado de 240px para manter proporção */

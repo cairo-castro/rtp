@@ -1,0 +1,8 @@
+[2025-06-03 18:36:20] ERROR: Rota não encontrada
+File: /home/u313569922/domains/direcaoclinica.com/public_html/qualidade/rtp_teste/src/core/Router.php:34
+IP: 45.181.229.82
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /rtp_teste/ashd
+Trace: #0 /home/u313569922/domains/direcaoclinica.com/public_html/qualidade/rtp_teste/index.php(52): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------

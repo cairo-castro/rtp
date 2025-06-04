@@ -32,11 +32,11 @@
                         </div>
 
                         <!-- Serviços do grupo -->                        <div class="group-services" style="border-left-color: <?php echo htmlspecialchars($grupo['grupo_cor']); ?>">                            <?php foreach ($grupo['servicos'] as $servicoIndex => $servico) {
-                                $total_executados = (int)$servico['total_executados'];
-                                $meta_pdt = (int)$servico['meta_pdt'];
+                                $total_executados = (int)$servico['total_executados'];                                $meta_pdt = (int)$servico['meta_pdt'];
                                 
-                                // Calcular totais de pactuado e agendado dos dados diários
-                                $total_pactuado = 0;
+                                // O valor pactuado vem da tabela meta (não da soma diária da agenda)
+                                $total_pactuado = (int)$servico['pactuado']; // Valor fixo da meta mensal
+                                
                                 $total_agendado = 0;
                                 
                                 // Garantir que dados_graficos existe
@@ -47,7 +47,7 @@
                                 // Verificar se existe dados diários para este serviço
                                 if (isset($dados_graficos[$indiceGraficoGlobal]['dadosDiarios'])) {
                                     foreach ($dados_graficos[$indiceGraficoGlobal]['dadosDiarios'] as $dia) {
-                                        $total_pactuado += (int)($dia['pactuado'] ?? 0);
+                                        // Apenas somar o agendado dos dados diários (pactuado vem da meta)
                                         $total_agendado += (int)($dia['agendado'] ?? 0);
                                     }
                                 }
@@ -122,14 +122,12 @@
 <!-- JavaScript para aplicar cores das abas automaticamente -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔥 JAVASCRIPT CARREGADO - DASHBOARD ATUALIZADO!');
     
     // Aplicar cores de fundo nas abas
     document.querySelectorAll('.group-tab').forEach(tab => {
         const cor = tab.style.getPropertyValue('--grupo-cor');
         if (cor) {
             tab.style.backgroundColor = cor;
-            console.log('Aba colorida aplicada:', cor);
             
             // Efeito hover
             tab.addEventListener('mouseenter', function() {
@@ -234,11 +232,8 @@ function showLegendTooltip(element, type) {
 <script>
 // Dados para os gráficos (layout original mantido)
 window.dadosGraficos = <?php echo json_encode($dados_graficos ?? []); ?>;
-console.log('📊 Dados dos gráficos carregados:', window.dadosGraficos);
-console.log('📈 Quantidade de grupos:', <?php echo count($relatorio_por_grupos); ?>);
+
 </script>
 <?php } else { ?>
-<script>
-console.log('ℹ️ Aguardando seleção de unidade...');
-</script>
+
 <?php } ?>

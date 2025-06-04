@@ -47,22 +47,34 @@
         </div>
         </div>
     </div>
-    
-    <!-- Segunda linha do header - Seleção de Unidade -->
+      <!-- Segunda linha do header - Seleção de Unidade e Pesquisa -->
     <div class="header-wrapper">
         <div class="header-second-row">
             <div class="unit-filter">
-            <label for="unidade">Unidade:</label>
-            <select name="unidade" id="unidade" class="unit-select" onchange="document.getElementById('mainForm').submit();" aria-label="Selecionar unidade">
-                <option value="">Selecione a Unidade</option>
-                <?php if (isset($unidades)): ?>
-                    <?php foreach ($unidades as $u) { ?>
-                        <option value="<?php echo $u['id']; ?>" <?php echo (isset($unidade) && $unidade == $u['id']) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($u['nome']); ?>
-                        </option>
-                    <?php } ?>                <?php endif; ?>
-            </select>
-        </div>
+                <label for="unidade">Unidade:</label>
+                <select name="unidade" id="unidade" class="unit-select" onchange="document.getElementById('mainForm').submit();" aria-label="Selecionar unidade">
+                    <option value="">Selecione a Unidade</option>
+                    <?php if (isset($unidades)): ?>
+                        <?php foreach ($unidades as $u) { ?>
+                            <option value="<?php echo $u['id']; ?>" <?php echo (isset($unidade) && $unidade == $u['id']) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($u['nome']); ?>
+                            </option>
+                        <?php } ?>
+                    <?php endif; ?>
+                </select>
+            </div>
+            
+            <!-- Nova barra de pesquisa -->
+            <div class="search-filter">
+                <label for="search">Pesquisar:</label>
+                <div class="search-input-container">
+                    <input type="text" id="search" placeholder="Buscar por grupo ou serviço..." class="search-input" autocomplete="off" aria-label="Pesquisar grupos ou serviços">
+                    <button type="button" id="clearSearch" class="clear-search" title="Limpar pesquisa" aria-label="Limpar pesquisa">
+                        <span>×</span>
+                    </button>
+                </div>
+                <div class="search-results" id="searchResults" style="display: none;"></div>
+            </div>
         </div>
     </div>
 </header>
@@ -93,6 +105,11 @@ document.addEventListener('keydown', function(e) {
     if (e.altKey && e.key === 'u') {
         e.preventDefault();
         document.getElementById('unidade')?.focus();
+    }
+    // Alt + S para focar na pesquisa
+    if (e.altKey && e.key === 's') {
+        e.preventDefault();
+        document.getElementById('search')?.focus();
     }
 });
 </script>

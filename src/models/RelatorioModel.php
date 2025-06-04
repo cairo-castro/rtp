@@ -117,8 +117,7 @@ class RelatorioModel {
         try {
             // Query otimizada incluindo dados do grupo e tabela meta com validação temporal
             // Prioridade das metas: 1°PDT, 2°Meta temporal (tabela meta), 3°Meta fixa (tabela servico)
-            $query = "
-            SELECT 
+            $query = "            SELECT 
                 s.unidade_id,
                 s.id AS servico_id,
                 s.grupo_id,
@@ -131,7 +130,7 @@ class RelatorioModel {
                 COALESCE(p.meta, CASE WHEN m.id IS NOT NULL THEN 1 ELSE NULL END, s.meta, 0) AS meta,
                 COALESCE(p.meta, 0) AS meta_pdt,
                 CASE WHEN m.id IS NOT NULL THEN 1 ELSE 0 END AS meta_temporal,
-                COALESCE(s.meta, 0) AS pactuado,
+                COALESCE(CAST(m.descricao AS UNSIGNED), s.meta, 0) AS pactuado,
                 COALESCE(SUM(r.agendados), 0) AS total_agendados,
                 COALESCE(SUM(r.executados), 0) AS executados,
                 COALESCE(SUM(r.executados_por_encaixe), 0) AS total_executados_por_encaixe,
@@ -164,7 +163,7 @@ class RelatorioModel {
                 COALESCE(p.meta, CASE WHEN m.id IS NOT NULL THEN 1 ELSE NULL END, s.meta, 0), 
                 COALESCE(p.meta, 0), 
                 CASE WHEN m.id IS NOT NULL THEN 1 ELSE 0 END, 
-                COALESCE(s.meta, 0)
+                COALESCE(CAST(m.descricao AS UNSIGNED), s.meta, 0)
             ORDER BY 
                 sg.nome ASC, s.natureza ASC
             LIMIT ?
@@ -228,12 +227,11 @@ class RelatorioModel {
                 u.nome AS unidade_nome,
                 s.natureza,
                 sg.nome AS grupo_nome,
-                sg.cor AS grupo_cor,
-                CONCAT('01/', LPAD(?, 2, '0'), '/', ?) AS mes_agrupado,
+                sg.cor AS grupo_cor,                CONCAT('01/', LPAD(?, 2, '0'), '/', ?) AS mes_agrupado,
                 COALESCE(p.meta, CASE WHEN m.id IS NOT NULL THEN 1 ELSE NULL END, s.meta, 0) AS meta,
                 COALESCE(p.meta, 0) AS meta_pdt,
                 CASE WHEN m.id IS NOT NULL THEN 1 ELSE 0 END AS meta_temporal,
-                COALESCE(s.meta, 0) AS pactuado,
+                COALESCE(CAST(m.descricao AS UNSIGNED), s.meta, 0) AS pactuado,
                 COALESCE(SUM(r.agendados), 0) AS total_agendados,
                 COALESCE(SUM(r.executados), 0) AS executados,
                 COALESCE(SUM(r.executados_por_encaixe), 0) AS total_executados_por_encaixe,
@@ -259,14 +257,13 @@ class RelatorioModel {
                     MAKEDATE(?, 1) BETWEEN 
                         COALESCE(m.data_inicio, '1900-01-01') AND 
                         COALESCE(m.data_fim, '2100-12-31')            WHERE 
-                s.unidade_id = ?
-            GROUP BY 
+                s.unidade_id = ?            GROUP BY 
                 s.unidade_id, s.id, s.grupo_id, u.nome, s.natureza, 
                 sg.nome, sg.cor,
                 COALESCE(p.meta, CASE WHEN m.id IS NOT NULL THEN 1 ELSE NULL END, s.meta, 0), 
                 COALESCE(p.meta, 0), 
                 CASE WHEN m.id IS NOT NULL THEN 1 ELSE 0 END, 
-                COALESCE(s.meta, 0)
+                COALESCE(CAST(m.descricao AS UNSIGNED), s.meta, 0)
             ORDER BY 
                 s.natureza
             LIMIT ?
@@ -449,15 +446,28 @@ class RelatorioModel {
      * @return array Array indexado por dia do mês (1-31) com valores pactuados
      */
     private function obterDadosPactuadosAgenda($unidade_id, $servico_id, $mes, $ano) {
-        try {
-            // Buscar registros da agenda para o serviço
+        try {            // Buscar registros da agenda para o serviço
+            // Agrupar por dia da semana base (sem manhã/tarde) e somar consultas
             $query_agenda = "
             SELECT 
-                dia_semana,
+                CASE 
+                    WHEN dia_semana LIKE '%manhã%' OR dia_semana LIKE '%manha%' THEN 
+                        REPLACE(REPLACE(REPLACE(REPLACE(dia_semana, '-manhã', ''), '-manha', ''), ' manhã', ''), ' manha', '')
+                    WHEN dia_semana LIKE '%tarde%' THEN 
+                        REPLACE(REPLACE(dia_semana, '-tarde', ''), ' tarde', '')
+                    ELSE dia_semana
+                END as dia_base,
                 SUM(consulta_por_dia) as total_consultas_dia
             FROM agenda
             WHERE unidade_id = ? AND servico_id = ?
-            GROUP BY dia_semana
+            GROUP BY 
+                CASE 
+                    WHEN dia_semana LIKE '%manhã%' OR dia_semana LIKE '%manha%' THEN 
+                        REPLACE(REPLACE(REPLACE(REPLACE(dia_semana, '-manhã', ''), '-manha', ''), ' manhã', ''), ' manha', '')
+                    WHEN dia_semana LIKE '%tarde%' THEN 
+                        REPLACE(REPLACE(dia_semana, '-tarde', ''), ' tarde', '')
+                    ELSE dia_semana
+                END
             ";
             
             $stmt = $this->pdo->prepare($query_agenda);
@@ -476,11 +486,10 @@ class RelatorioModel {
             if (empty($agenda_dados)) {
                 return $dados_pactuados; // Retornar array com zeros se não há dados na agenda
             }
-            
-            // Mapear registros da agenda por dia da semana (já somados)
+              // Mapear registros da agenda por dia da semana (já somados manhã + tarde)
             $agenda_por_dia_semana = [];
             foreach ($agenda_dados as $registro) {
-                $dia_semana_normalizado = $this->normalizarDiaSemanaAgenda($registro['dia_semana']);
+                $dia_semana_normalizado = $this->normalizarDiaSemanaAgenda($registro['dia_base']);
                 $agenda_por_dia_semana[$dia_semana_normalizado] = (int)$registro['total_consultas_dia'];
             }
             
@@ -733,16 +742,29 @@ class RelatorioModel {
         try {
             // Criar placeholders para prepared statement
             $placeholders = str_repeat('?,', count($servicos_ids) - 1) . '?';
-            
-            // Query otimizada - buscar dados da agenda para todos os serviços
+              // Query otimizada - buscar dados da agenda para todos os serviços
+            // Agrupar por dia da semana base (sem manhã/tarde) e somar consultas
             $query_agenda = "
             SELECT 
                 servico_id,
-                dia_semana,
+                CASE 
+                    WHEN dia_semana LIKE '%manhã%' OR dia_semana LIKE '%manha%' THEN 
+                        REPLACE(REPLACE(REPLACE(REPLACE(dia_semana, '-manhã', ''), '-manha', ''), ' manhã', ''), ' manha', '')
+                    WHEN dia_semana LIKE '%tarde%' THEN 
+                        REPLACE(REPLACE(dia_semana, '-tarde', ''), ' tarde', '')
+                    ELSE dia_semana
+                END as dia_base,
                 SUM(consulta_por_dia) as total_consultas_dia
             FROM agenda
             WHERE unidade_id = ? AND servico_id IN ({$placeholders})
-            GROUP BY servico_id, dia_semana
+            GROUP BY servico_id, 
+                CASE 
+                    WHEN dia_semana LIKE '%manhã%' OR dia_semana LIKE '%manha%' THEN 
+                        REPLACE(REPLACE(REPLACE(REPLACE(dia_semana, '-manhã', ''), '-manha', ''), ' manhã', ''), ' manha', '')
+                    WHEN dia_semana LIKE '%tarde%' THEN 
+                        REPLACE(REPLACE(dia_semana, '-tarde', ''), ' tarde', '')
+                    ELSE dia_semana
+                END
             ";
             
             $stmt = $this->pdo->prepare($query_agenda);
@@ -768,11 +790,10 @@ class RelatorioModel {
                     $agenda_por_servico[$servico_id][$dia] = 0;
                 }
             }
-            
-            // Processar dados da agenda
+              // Processar dados da agenda
             foreach ($agenda_dados as $registro) {
                 $servico_id = (int)$registro['servico_id'];
-                $dia_semana_agenda = $registro['dia_semana'];
+                $dia_semana_agenda = $registro['dia_base']; // Usar dia_base ao invés de dia_semana
                 $total_consultas = (int)$registro['total_consultas_dia'];
                 
                 // Normalizar dia da semana da agenda

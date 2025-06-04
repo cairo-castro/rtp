@@ -160,8 +160,7 @@ class RelatorioController extends Controller {
                     $servico_id = (int)$servico['servico_id'];
                       // OTIMIZAÇÃO: Usar dados já carregados em lote
                     $dadosDiarios = $todos_dados_diarios[$servico_id] ?? [];
-                    
-                    $dadosGraficos[$indiceGlobal] = [
+                      $dadosGraficos[$indiceGlobal] = [
                         'id' => $indiceGlobal,                        'grupo_id' => (int)$grupo['grupo_id'],
                         'grupo_nome' => $grupo['grupo_nome'],
                         'grupo_cor' => $grupo['grupo_cor'],
@@ -172,6 +171,7 @@ class RelatorioController extends Controller {
                         'nome' => $servico['natureza'] ?? 'Serviço',
                         'meta_pdt' => (int)($servico['meta_pdt'] ?? 0),
                         'total_executados' => (int)($servico['total_executados'] ?? 0),
+                        'total_pactuado' => (int)($servico['pactuado'] ?? 0),
                         'dadosDiarios' => $dadosDiarios
                     ];
                     
@@ -212,8 +212,7 @@ class RelatorioController extends Controller {
                     $inputData['mes'], 
                     $inputData['ano']
                 );
-                
-                $dadosGraficos[$index] = [
+                  $dadosGraficos[$index] = [
                     'id' => $index,
                     'unidade_id' => (int)$inputData['unidade'],
                     'servico_id' => (int)$servico['servico_id'],
@@ -222,6 +221,7 @@ class RelatorioController extends Controller {
                     'nome' => $servico['natureza'] ?? 'Serviço',
                     'meta_pdt' => (int)($servico['meta_pdt'] ?? 0),
                     'total_executados' => (int)($servico['total_executados'] ?? 0),
+                    'total_pactuado' => (int)($servico['pactuado'] ?? 0),
                     'dadosDiarios' => $dadosDiarios
                 ];
                 
