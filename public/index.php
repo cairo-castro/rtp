@@ -7,9 +7,9 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Define paths for server structure
-define('APP_ROOT', __DIR__);
+define('APP_ROOT', dirname(__DIR__)); // Parent directory of public
 define('PUBLIC_PATH', __DIR__ . '/assets');
-define('BASE_URL', '/rtp_teste/');
+define('BASE_URL', '/');
 
 // Load configuration (includes database.php and helpers)
 require_once APP_ROOT . '/src/config/app.php';

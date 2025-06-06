@@ -1,8 +1,176 @@
-[2025-06-03 18:36:20] ERROR: Rota não encontrada
-File: /home/u313569922/domains/direcaoclinica.com/public_html/qualidade/rtp_teste/src/core/Router.php:34
-IP: 45.181.229.82
+[2025-06-06 17:52:00] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:34
+IP: ::1
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
-Request: /rtp_teste/ashd
-Trace: #0 /home/u313569922/domains/direcaoclinica.com/public_html/qualidade/rtp_teste/index.php(52): Router->dispatch()
+Request: /gerencia.php
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(66): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 17:52:42] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:34
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia.php
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:19:08] ERROR: Undefined array key "servico_nome"
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\gerencia.php:227
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.100.3 Chrome/132.0.6834.210 Electron/34.5.1 Safari/537.36
+Request: /gerencia?unidade=27&mes=6&ano=2025
+--------------------------------------------------------------------------------
+[2025-06-06 18:19:08] ERROR: View não encontrada: error
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php:25
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.100.3 Chrome/132.0.6834.210 Electron/34.5.1 Safari/537.36
+Request: /gerencia?unidade=27&mes=6&ano=2025
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(353): Controller->render()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(53): RelatorioController->gerencia()
+#2 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#3 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:19:16] ERROR: Undefined array key "servico_nome"
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\gerencia.php:227
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.100.3 Chrome/132.0.6834.210 Electron/34.5.1 Safari/537.36
+Request: /gerencia?mes=6&ano=2025&unidade=21
+--------------------------------------------------------------------------------
+[2025-06-06 18:19:16] ERROR: View não encontrada: error
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php:25
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.100.3 Chrome/132.0.6834.210 Electron/34.5.1 Safari/537.36
+Request: /gerencia?mes=6&ano=2025&unidade=21
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(353): Controller->render()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(53): RelatorioController->gerencia()
+#2 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#3 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:19:21] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:34
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia.php
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:19:25] ERROR: Undefined array key "servico_nome"
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\gerencia.php:227
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+--------------------------------------------------------------------------------
+[2025-06-06 18:19:25] ERROR: View não encontrada: error
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php:25
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(353): Controller->render()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(53): RelatorioController->gerencia()
+#2 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#3 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:21:59] ERROR: Undefined array key "servico_nome"
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\gerencia.php:224
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+--------------------------------------------------------------------------------
+[2025-06-06 18:21:59] ERROR: View não encontrada: error
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php:25
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(353): Controller->render()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(53): RelatorioController->gerencia()
+#2 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#3 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:22:01] ERROR: Undefined array key "servico_nome"
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\gerencia.php:224
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+--------------------------------------------------------------------------------
+[2025-06-06 18:22:01] ERROR: View não encontrada: error
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php:25
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(353): Controller->render()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(53): RelatorioController->gerencia()
+#2 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#3 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:22:07] ERROR: Undefined array key "servico_nome"
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\gerencia.php:224
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+--------------------------------------------------------------------------------
+[2025-06-06 18:22:07] ERROR: View não encontrada: error
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php:25
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(353): Controller->render()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(53): RelatorioController->gerencia()
+#2 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#3 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:22:21] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:34
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:41:08] ERROR: Undefined array key "servico_nome"
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\gerencia.php:224
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+--------------------------------------------------------------------------------
+[2025-06-06 18:41:08] ERROR: View não encontrada: error
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php:25
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(353): Controller->render()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(53): RelatorioController->gerencia()
+#2 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#3 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:41:08] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:34
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#1 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:41:09] ERROR: Undefined array key "servico_nome"
+File: C:\projects\rtp_teste\rtp-hospital-report\src\views\relatorio\gerencia.php:224
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+--------------------------------------------------------------------------------
+[2025-06-06 18:41:09] ERROR: View não encontrada: error
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Controller.php:25
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /gerencia?unidade=24&mes=6&ano=2025
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\src\controllers\RelatorioController.php(354): Controller->render()
+#1 C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php(53): RelatorioController->gerencia()
+#2 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
+#3 {main}
+--------------------------------------------------------------------------------
+[2025-06-06 18:41:09] ERROR: Rota não encontrada
+File: C:\projects\rtp_teste\rtp-hospital-report\src\core\Router.php:34
+IP: ::1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Request: /.well-known/appspecific/com.chrome.devtools.json
+Trace: #0 C:\projects\rtp_teste\rtp-hospital-report\public\index.php(52): Router->dispatch()
 #1 {main}
 --------------------------------------------------------------------------------

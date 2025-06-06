@@ -77,8 +77,7 @@
                     <small class="auto-selected-hint">Unidade selecionada automaticamente</small>
                 <?php endif; ?>
             </div>
-            
-            <!-- Nova barra de pesquisa -->
+              <!-- Nova barra de pesquisa -->
             <div class="search-filter">
                 <label for="search">Pesquisar:</label>
                 <div class="search-input-container">
@@ -88,6 +87,14 @@
                     </button>
                 </div>
                 <div class="search-results" id="searchResults" style="display: none;"></div>
+            </div>
+            
+            <!-- Link para página de gerência -->
+            <div class="navigation-links">
+                <a href="/gerencia<?php echo !empty($unidade) ? '?unidade=' . $unidade . '&mes=' . ($mes ?? date('n')) . '&ano=' . ($ano ?? date('Y')) : ''; ?>" class="nav-link">
+                    <span class="nav-icon">👔</span>
+                    Painel Gerencial
+                </a>
             </div>
         </div>
     </div>

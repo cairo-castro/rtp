@@ -13,7 +13,7 @@
 RewriteEngine On
 
 # Set base for rewrite rules
-RewriteBase /rtp_teste/
+RewriteBase /
 
 # Block access to sensitive files
 <Files ~ "^\.">

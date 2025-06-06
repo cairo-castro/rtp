@@ -2,10 +2,11 @@
 
 class Router {
     private $routes;
-    
-    public function __construct() {
+      public function __construct() {
         $this->routes = require APP_ROOT . '/src/config/routes.php';
-    }    public function dispatch() {
+    }
+
+    public function dispatch() {
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         

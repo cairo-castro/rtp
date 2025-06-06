@@ -91,11 +91,10 @@ class ErrorHandler {
      */
     private static function configureErrorDisplay() {
         $isProduction = self::isProduction();
-        
-        if ($isProduction) {
+          if ($isProduction) {
             ini_set('display_errors', '0');
             ini_set('log_errors', '1');
-            error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
+            error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
         } else {
             ini_set('display_errors', '1');
             ini_set('log_errors', '1');

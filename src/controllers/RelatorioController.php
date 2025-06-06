@@ -11,12 +11,13 @@ require_once __DIR__ . '/../config/session.php';
  */
 class RelatorioController extends Controller {
     private $model;
-    
-    // Constantes para validação
+      // Constantes para validação
     private const ANO_MINIMO = 2020;
     private const ANO_MAXIMO = 2030;
     private const MES_MINIMO = 1;
-    private const MES_MAXIMO = 12;    public function __construct() {
+    private const MES_MAXIMO = 12;
+
+    public function __construct() {
         $this->model = new RelatorioModel();
     }
     
@@ -309,10 +310,96 @@ class RelatorioController extends Controller {
         try {
             // Usar método otimizado do model
             return $this->model->obterDadosDiariosMultiplosServicos($unidade_id, $servicos_ids, $mes, $ano);
-            
-        } catch (Exception $e) {
+              } catch (Exception $e) {
             error_log("Erro ao obter dados diários em lote: " . $e->getMessage());
             return [];
+        }
+    }
+    
+    /**
+     * Exibe o painel gerencial com KPIs adicionais
+     */
+    public function gerencia() {
+        try {
+            // Validar e sanitizar dados de entrada
+            $inputData = $this->validateAndSanitizeInput();
+
+            $data = [
+                'unidades' => $this->model->obterUnidades(),
+                'meses_nomes' => $this->model->obterMesesNomes(),
+                'unidade' => $inputData['unidade'],
+                'ano' => $inputData['ano'],
+                'mes' => $inputData['mes'],
+                'data_atual' => $this->formatDateTime(),
+                'relatorio_mensal' => [],
+                'relatorio_por_grupos' => [],
+                'unidade_nome' => '',
+                'produtividade_geral' => 0,
+                'produtividade_maxima' => 0,
+                'prod_vs_prod_max' => 0,
+                'dados_graficos' => [],
+                'user_logged_in' => $inputData['user_logged_in'],
+                'user_info' => $inputData['user_info']
+            ];
+
+            // Processar dados se unidade foi selecionada
+            if (!empty($inputData['unidade'])) {
+                $this->processarDadosUnidadeGerencia($data, $inputData);
+            }
+
+            $this->render('relatorio/gerencia', $data);
+
+        } catch (Exception $e) {
+            error_log('Erro ao carregar dashboard de gerência: ' . $e->getMessage());
+            $this->render('error', ['message' => 'Erro interno do servidor. Tente novamente mais tarde.']);
+        }
+    }
+
+    /**
+     * Processa dados específicos para a página de gerência
+     */
+    private function processarDadosUnidadeGerencia(&$data, $inputData) {
+        // Processar dados básicos (mesma lógica do dashboard principal)
+        $this->processarDadosUnidade($data, $inputData);
+
+        // Calcular estatísticas adicionais para gerência
+        if (!empty($data['relatorio_por_grupos'])) {
+            $this->calcularEstatisticasGerencia($data);
+        }
+    }
+
+    /**
+     * Calcula as estatísticas específicas para gerência
+     */
+    private function calcularEstatisticasGerencia(&$data) {
+        $total_meta_pdt = 0;
+        $total_pactuado = 0;
+        $total_executados = 0;
+
+        foreach ($data['relatorio_por_grupos'] as $grupo) {
+            foreach ($grupo['servicos'] as $servico) {
+                $meta_pdt = (float)($servico['meta_pdt'] ?? 0);
+                $pactuado = (float)($servico['pactuado'] ?? 0);
+                $executados = (float)($servico['total_executados'] ?? 0);
+
+                $total_meta_pdt += $meta_pdt;
+                $total_pactuado += $pactuado;
+                $total_executados += $executados;
+            }
+        }
+
+        // Produtividade Máxima = (Meta PDT / Pactuado) * 100
+        if ($total_pactuado > 0) {
+            $data['produtividade_maxima'] = ($total_meta_pdt / $total_pactuado) * 100;
+        } else {
+            $data['produtividade_maxima'] = 0;
+        }
+
+        // Prod vs Prod Max = (Executados / Meta PDT) * 100
+        if ($total_meta_pdt > 0) {
+            $data['prod_vs_prod_max'] = ($total_executados / $total_meta_pdt) * 100;
+        } else {
+            $data['prod_vs_prod_max'] = 0;
         }
     }
 }

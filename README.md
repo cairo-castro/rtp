@@ -1,54 +1,273 @@
-# Sistema RTP Hospital - Relatório de Produtividade
+# 🏥 Sistema RTP Hospital - Relatório de Produtividade
 
-Sistema de acompanhamento diário de produtividade para unidades hospitalares, desenvolvido com arquitetura MVC em PHP.
+Sistema de monitoramento e relatórios de produtividade hospitalar desenvolvido em PHP com arquitetura MVC.
 
-## 📋 Sobre o Projeto
+## 📊 Visão Geral
+Plataforma para acompanhamento diário da produtividade dos serviços hospitalares da EMSERH, com dashboards interativos e métricas em tempo real.
 
-O Sistema RTP (Relatório de Tempo de Produtividade) foi desenvolvido para monitorar e visualizar a produtividade diária dos serviços hospitalares da EMSERH (Empresa Maranhense de Serviços Hospitalares). O sistema permite:
-
-- **Acompanhamento em tempo real** da produtividade por unidade
-- **Visualização gráfica** dos dados através de gráficos de barras e medidores
-- **Filtros por período** (mês/ano) e unidade
-- **Comparação** entre metas pactuadas, agendamentos e realizações
-- **Interface responsiva** e intuitiva
-
-## 🏗️ Arquitetura
-
-O projeto segue o padrão **MVC (Model-View-Controller)** com uma estrutura moderna e profissional:
+## 🏗️ Estrutura do Projeto
 
 ```
 rtp-hospital-report/
-├── public/                     # Ponto de entrada público
-│   ├── index.php              # Bootstrap da aplicação
-│   └── assets/                # Recursos estáticos
-│       ├── css/               # Folhas de estilo
-│       ├── js/                # JavaScript
-│       └── images/            # Imagens
-├── src/                       # Código fonte
-│   ├── config/                # Configurações
-│   │   ├── database.php       # Configuração do banco
-│   │   └── routes.php         # Definição de rotas
-│   ├── core/                  # Núcleo do sistema
-│   │   ├── Router.php         # Sistema de roteamento
-│   │   ├── Controller.php     # Controller base
-│   │   └── ErrorHandler.php   # Tratamento de erros
-│   ├── controllers/           # Controladores
-│   │   └── RelatorioController.php
-│   ├── models/                # Modelos de dados
-│   │   └── RelatorioModel.php
-│   ├── views/                 # Templates
-│   │   ├── layouts/           # Layouts base
-│   │   └── relatorio/         # Views específicas
-│   └── helpers/               # Funções auxiliares
-│       └── relatorio_helpers.php
-├── .htaccess                  # Configuração Apache
-└── README.md                  # Documentação
+├── 📁 public/                 # Entrada pública do sistema
+│   ├── index.php             # Bootstrap da aplicação
+│   └── assets/               # Recursos estáticos (CSS, JS, images)
+├── 📁 src/                   # Código fonte principal
+│   ├── config/               # Configurações do sistema
+│   ├── core/                 # Núcleo da aplicação
+│   ├── controllers/          # Controladores MVC
+│   ├── models/               # Modelos de dados
+│   ├── views/                # Templates e layouts
+│   └── helpers/              # Funções auxiliares
+├── 📁 tests/                 # Testes automatizados
+└── 📁 logs/                  # Logs do sistema
 ```
 
-## 🚀 Funcionalidades
+## ⚡ Fluxo Principal da Aplicação
 
-### Dashboard Principal
-- **Seleção de unidade**: Dropdown com todas as unidades cadastradas
+```mermaid
+graph TD
+    A[Usuário acessa sistema] --> B[public/index.php]
+    B --> C[src/core/Router.php]
+    C --> D[src/controllers/RelatorioController.php]
+    D --> E[src/models/RelatorioModel.php]
+    E --> F[Banco de Dados]
+    F --> G[src/views/relatorio/dashboard.php]
+    G --> H[Interface do Usuário]
+```
+
+---
+
+## 📂 Detalhamento dos Arquivos
+
+### 🔧 **public/index.php**
+**Função:** Bootstrap e ponto de entrada da aplicação
+```mermaid
+graph LR
+    A[Requisição HTTP] --> B[Configurações]
+    B --> C[Autoload]
+    C --> D[Router]
+    D --> E[Resposta]
+```
+- Carrega configurações
+- Inicializa autoloader
+- Configura tratamento de erros
+- Despacha requisições para o Router
+
+### 🧭 **src/core/Router.php**
+**Função:** Sistema de roteamento de URLs
+```mermaid
+graph TD
+    A[URL Request] --> B{Validar Rota}
+    B -->|Válida| C[Extrair Controller/Action]
+    B -->|Inválida| D[Erro 404]
+    C --> E[Instanciar Controller]
+    E --> F[Executar Action]
+```
+- Analisa URLs recebidas
+- Mapeia para controllers/actions
+- Gerencia parâmetros de requisição
+
+### 🎮 **src/controllers/RelatorioController.php**
+**Função:** Controlador principal dos relatórios
+```mermaid
+graph TD
+    A[Controller] --> B[dashboard()]
+    A --> C[obterDadosDiarios()]
+    B --> D[RelatorioModel]
+    C --> D
+    D --> E[Processar Dados]
+    E --> F[View/JSON Response]
+```
+**Métodos principais:**
+- `dashboard()` - Tela principal com filtros
+- `obterDadosDiarios()` - API para dados diários
+- Validação de parâmetros de entrada
+- Formatação de resposta JSON/HTML
+
+### 💾 **src/models/RelatorioModel.php**
+**Função:** Camada de acesso a dados (otimizada para performance)
+```mermaid
+graph TD
+    A[Model] --> B[obterRelatorioMensalPorGrupos()]
+    A --> C[obterDadosDiariosMultiplosServicos()]
+    A --> D[obterDadosPactuadosAgenda()]
+    B --> E[Query Meta PDT + Temporal]
+    C --> F[Query Batch N+1 Fix]
+    D --> G[Query Agenda Manhã/Tarde]
+    E --> H[Base de Dados]
+    F --> H
+    G --> H
+```
+**Métodos otimizados:**
+- `obterRelatorioMensalPorGrupos()` - Relatório com meta PDT/temporal
+- `obterDadosDiariosMultiplosServicos()` - Carregamento em lote (evita N+1)
+- `obterDadosPactuadosAgenda()` - Soma manhã + tarde automaticamente
+
+### 🖼️ **src/views/relatorio/dashboard.php**
+**Função:** Interface principal do usuário
+```mermaid
+graph LR
+    A[Dashboard] --> B[Filtros]
+    A --> C[Gráficos]
+    A --> D[Tabelas]
+    B --> E[Unidade/Mês/Ano]
+    C --> F[Chart.js]
+    D --> G[Dados Diários]
+```
+- Filtros interativos (unidade, mês, ano)
+- Visualização em gráficos (Chart.js)
+- Tabelas responsivas com dados diários
+- Interface responsiva Bootstrap
+
+### ⚙️ **src/config/**
+**Função:** Configurações centralizadas do sistema
+
+#### 📄 **database.php**
+```mermaid
+graph LR
+    A[Configuração] --> B[PDO Connection]
+    B --> C[MySQL Database]
+```
+- Configuração de conexão PDO
+- Credenciais de banco de dados
+- Configurações de charset e timezone
+
+#### 📄 **routes.php**
+```mermaid
+graph LR
+    A[Rotas] --> B[Controller Mapping]
+    B --> C[Action Mapping]
+```
+- Mapeamento de URLs para controllers
+- Definição de rotas da aplicação
+
+#### 📄 **session.php**
+```mermaid
+graph LR
+    A[Session Config] --> B[Security Settings]
+    B --> C[User Authentication]
+```
+- Configurações de sessão PHP
+- Configurações de segurança
+
+---
+
+## 🔄 Fluxo de Dados Principal
+
+### 📈 **Geração de Relatório Mensal**
+```mermaid
+sequenceDiagram
+    participant U as Usuário
+    participant C as Controller
+    participant M as Model
+    participant DB as Database
+    
+    U->>C: Seleciona unidade/mês/ano
+    C->>M: obterRelatorioMensalPorGrupos()
+    M->>DB: Query com JOINs (servico + meta + pdt)
+    DB->>M: Dados consolidados
+    M->>C: Array estruturado por grupos
+    C->>U: Dashboard com gráficos
+```
+
+### 📊 **Carregamento de Dados Diários**
+```mermaid
+sequenceDiagram
+    participant JS as JavaScript
+    participant C as Controller
+    participant M as Model
+    participant DB as Database
+    
+    JS->>C: AJAX obterDadosDiarios()
+    C->>M: obterDadosDiariosMultiplosServicos()
+    M->>DB: Query BATCH (evita N+1)
+    DB->>M: Dados de múltiplos serviços
+    M->>M: obterDadosPactuadosAgenda()
+    M->>C: Array completo (31 dias)
+    C->>JS: JSON response
+    JS->>JS: Atualiza gráficos
+```
+
+---
+
+## 🚀 Funcionalidades Principais
+
+### ✅ **Implementadas**
+- ✅ Dashboard interativo com filtros
+- ✅ Visualização por grupos de serviços
+- ✅ Gráficos responsivos (Chart.js)
+- ✅ Meta PDT + Meta Temporal integradas
+- ✅ Soma automática manhã/tarde da agenda
+- ✅ Performance otimizada (batch queries)
+- ✅ Tratamento robusto de erros
+
+### 🎯 **Características Técnicas**
+- **Arquitetura:** MVC Pattern
+- **Performance:** Otimizado para grandes volumes
+- **Compatibilidade:** PHP 8.0+, MySQL 5.7+
+- **Frontend:** Bootstrap + Chart.js
+- **Segurança:** Prepared statements, validação de entrada
+
+---
+
+## 🛠️ Instalação e Configuração
+
+### **Pré-requisitos**
+- PHP 8.0+
+- MySQL 5.7+
+- Apache/Nginx
+- Composer (para dependencies)
+
+### **Setup Rápido**
+1. Clone o repositório
+2. Configure `src/config/database.php`
+3. Execute via servidor PHP: `php -S localhost:8080 -t public`
+4. Acesse: `http://localhost:8080`
+
+---
+
+## 🔧 Arquitetura de Dados
+
+### **Tabelas Principais**
+- `servico` - Cadastro de serviços
+- `unidade` - Unidades hospitalares
+- `rtpdiario` - Dados diários de produtividade
+- `agenda` - Dados pactuados (manhã/tarde)
+- `pdt` - Metas PDT com período
+- `meta` - Metas temporais
+
+### **Fluxo de Meta (Prioridade)**
+```mermaid
+graph TD
+    A[Buscar Meta] --> B{PDT existe?}
+    B -->|Sim| C[Usar Meta PDT]
+    B -->|Não| D{Meta Temporal?}
+    D -->|Sim| E[Usar Meta Temporal]
+    D -->|Não| F[Usar Meta Fixa do Serviço]
+```
+
+---
+
+## 📞 Suporte
+
+**EMSERH - Empresa Maranhense de Serviços Hospitalares**
+- 🌐 **Site:** [www.emserh.ma.gov.br](https://www.emserh.ma.gov.br)
+- 📧 **Email:** suporte.rtp@emserh.ma.gov.br
+- 📱 **Emergência:** [telefone-emergencia]
+
+---
+
+<div align="center">
+
+**🏥 Sistema RTP Hospital v2.0.0**  
+*Desenvolvido para EMSERH - Todos os direitos reservados © 2025*
+
+[![PHP](https://img.shields.io/badge/PHP-8.0+-blue)](https://php.net) 
+[![MySQL](https://img.shields.io/badge/MySQL-5.7+-orange)](https://mysql.com)
+[![Otimizado](https://img.shields.io/badge/Performance-Optimized-green)]()
+
+</div>
 - **Filtros temporais**: Seleção de mês e ano
 - **Indicador de produtividade**: Cálculo automático da produtividade geral
 - **Última atualização**: Timestamp da última consulta
