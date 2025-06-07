@@ -33,8 +33,7 @@
                     <?php } ?>
                 </select>
             </div>
-        </div>
-          <div class="productivity-summary">
+        </div>        <div class="productivity-summary">
             <?php if (isset($produtividade_geral)): ?>
             <div class="productivity-value" aria-label="Produtividade atual">
                 <?php echo formatarNumero($produtividade_geral, 2); ?>%
@@ -42,6 +41,31 @@
             <?php else: ?>
             <div class="productivity-value" aria-label="Produtividade não disponível">--</div>
             <div class="productivity-label">Produtividade</div>
+            <?php endif; ?>
+        </div>
+          <!-- Produtividade Máxima (Soma Metas / Soma PDT) -->
+        <div class="productivity-summary">
+            <?php if (isset($produtividade_maxima)): ?>
+            <div class="productivity-value" aria-label="Produtividade máxima possível">
+                <?php echo formatarNumero($produtividade_maxima, 2); ?>%
+            </div>
+            <div class="productivity-label">Prod Máx</div>
+            <?php else: ?>
+            <div class="productivity-value" aria-label="Produtividade máxima não disponível">--</div>
+            <div class="productivity-label">Prod Máx</div>
+            <?php endif; ?>
+        </div>
+        
+        <!-- Produtividade vs Produtividade Máxima (Realizado x Pactuado) -->
+        <div class="productivity-summary">
+            <?php if (isset($prod_vs_prod_max)): ?>
+            <div class="productivity-value" aria-label="Relação produtividade atual vs máxima">
+                <?php echo formatarNumero($prod_vs_prod_max, 2); ?>%
+            </div>
+            <div class="productivity-label">Prod vs Máx</div>
+            <?php else: ?>
+            <div class="productivity-value" aria-label="Relação não disponível">--</div>
+            <div class="productivity-label">Prod vs Máx</div>
             <?php endif; ?>
         </div>
         

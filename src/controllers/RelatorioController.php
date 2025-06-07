@@ -386,18 +386,14 @@ class RelatorioController extends Controller {
                 $total_pactuado += $pactuado;
                 $total_executados += $executados;
             }
-        }
-
-        // Produtividade Máxima = (Meta PDT / Pactuado) * 100
-        if ($total_pactuado > 0) {
-            $data['produtividade_maxima'] = ($total_meta_pdt / $total_pactuado) * 100;
+        }        // Produtividade Máxima = (Soma de todas as Metas / Soma de todos os PDT) * 100
+        if ($total_meta_pdt > 0) {
+            $data['produtividade_maxima'] = ($total_pactuado / $total_meta_pdt) * 100;
         } else {
             $data['produtividade_maxima'] = 0;
-        }
-
-        // Prod vs Prod Max = (Executados / Meta PDT) * 100
-        if ($total_meta_pdt > 0) {
-            $data['prod_vs_prod_max'] = ($total_executados / $total_meta_pdt) * 100;
+        }        // Prod vs Prod Max = (Executados / Pactuados) * 100
+        if ($total_pactuado > 0) {
+            $data['prod_vs_prod_max'] = ($total_executados / $total_pactuado) * 100;
         } else {
             $data['prod_vs_prod_max'] = 0;
         }
