@@ -112,11 +112,11 @@ graph LR
     A --> C[Gráficos]
     A --> D[Tabelas]
     B --> E[Unidade/Mês/Ano]
-    C --> F[Chart.js]
+    C --> F[ApexCharts]
     D --> G[Dados Diários]
 ```
 - Filtros interativos (unidade, mês, ano)
-- Visualização em gráficos (Chart.js)
+- Visualização em gráficos (ApexCharts)
 - Tabelas responsivas com dados diários
 - Interface responsiva Bootstrap
 
@@ -196,7 +196,7 @@ sequenceDiagram
 ### ✅ **Implementadas**
 - ✅ Dashboard interativo com filtros
 - ✅ Visualização por grupos de serviços
-- ✅ Gráficos responsivos (Chart.js)
+- ✅ Gráficos responsivos (ApexCharts)
 - ✅ Meta PDT + Meta Temporal integradas
 - ✅ Soma automática manhã/tarde da agenda
 - ✅ Performance otimizada (batch queries)
@@ -206,7 +206,7 @@ sequenceDiagram
 - **Arquitetura:** MVC Pattern
 - **Performance:** Otimizado para grandes volumes
 - **Compatibilidade:** PHP 8.0+, MySQL 5.7+
-- **Frontend:** Bootstrap + Chart.js
+- **Frontend:** Bootstrap + ApexCharts
 - **Segurança:** Prepared statements, validação de entrada
 
 ---
@@ -945,9 +945,8 @@ CREATE DATABASE rtp_hospital CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
 
 3. **Verificar CDN**:
-   ```html
-   <!-- Verificar se Chart.js carrega -->
-   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   ```html   <!-- Verificar se ApexCharts carrega -->
+   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
    ```
 
 #### Estilos CSS não aplicam
@@ -1054,82 +1053,6 @@ Se os problemas persistirem:
 - [x] **Hardening Apache** - Configurações de segurança no .htaccess
 - [x] **Documentação completa** - Guias detalhados de instalação e execução
 
-### 🚀 **Próximas Melhorias (Roadmap)**
-
-#### Curto Prazo (1-2 meses)
-- [ ] **Sistema de autenticação e autorização**
-  - Login com hash de senhas (bcrypt/Argon2)
-  - Controle de acesso baseado em roles (admin, operador, visualizador)
-  - Recuperação segura de senha
-  
-- [ ] **Testes automatizados**
-  - PHPUnit para testes unitários
-  - Testes de integração para controllers
-  - Testes de segurança automatizados
-  
-- [ ] **Cache de consultas**
-  - Redis/Memcached para melhor performance
-  - Cache de queries SQL pesadas
-  - Cache de assets estáticos
-
-#### Médio Prazo (3-6 meses)  
-- [ ] **Exportação de relatórios**
-  - PDF com gráficos (usando mPDF/TCPDF)
-  - Excel/CSV para análise de dados
-  - Agendamento de relatórios automáticos
-  
-- [ ] **Dashboard analítico avançado**
-  - Métricas históricas e tendências
-  - Comparações inter-hospitalares
-  - Alertas e notificações automáticas
-  
-- [ ] **API REST completa**
-  - Endpoints padronizados (JSON-API)
-  - Documentação Swagger/OpenAPI
-  - Rate limiting por endpoint
-  
-- [ ] **Auditoria e compliance**
-  - Log de todas as ações dos usuários
-  - Relatórios de auditoria
-  - Compliance com LGPD
-
-#### Longo Prazo (6+ meses)
-- [ ] **Arquitetura escalável**
-  - Microserviços para módulos específicos
-  - Event sourcing para auditoria completa
-  - Message queues para processamento assíncrono
-  
-- [ ] **Inteligência artificial**
-  - Machine Learning para análise preditiva
-  - Detecção de anomalias nos dados
-  - Sugestões automáticas de otimização
-  
-- [ ] **Mobile e PWA**
-  - Aplicativo mobile nativo
-  - Progressive Web App (PWA)
-  - Notificações push
-  
-- [ ] **Integração externa**
-  - APIs governamentais (DataSUS, etc.)
-  - Sistemas de ERP hospitalares
-  - Business Intelligence (BI) tools
-
-### 🔧 **Melhorias Técnicas Contínuas**
-- [ ] **Performance**
-  - Database query optimization
-  - CDN para assets estáticos
-  - Lazy loading de componentes
-  
-- [ ] **DevOps**
-  - Docker containers completos
-  - CI/CD pipeline (GitHub Actions)
-  - Monitoramento com Prometheus/Grafana
-  
-- [ ] **Qualidade de código**
-  - PHP CodeSniffer para padrões
-  - PHPStan para análise estática
-  - Cobertura de testes > 80%
-
 ## 🤝 Contribuição
 
 ### Para contribuir com o projeto:
@@ -1184,38 +1107,11 @@ Este projeto é **proprietário** da **EMSERH - Empresa Maranhense de Serviços 
 - **Endereço**: São Luís - MA, Brasil
 
 ### 👨‍💻 **Equipe de Desenvolvimento**
-- **Arquiteto de Software**: GitHub Copilot (AI Assistant)
+- **Desenvolvedor Principal**: Cairo Castro
 - **Análise de Requisitos**: Equipe EMSERH
 - **Segurança**: Implementação de best practices OWASP
 - **UX/UI**: Baseado em requisitos funcionais e usabilidade
 
-### 📞 **Suporte Técnico**
-
-#### 🚨 **Suporte de Emergência (24h)**
-- **Telefone**: [telefone-emergencia]
-- **Email**: emergencia.ti@emserh.ma.gov.br
-- **Problemas críticos**: Sistema fora do ar, falhas de segurança
-
-#### 🛠️ **Suporte Geral (Horário Comercial)**
-- **Email**: suporte.rtp@emserh.ma.gov.br  
-- **Telefone**: [telefone-suporte]
-- **Horário**: Segunda a Sexta, 8h às 18h
-- **Tempo de resposta**: 4 horas úteis
-
-#### 📋 **Solicitações e Melhorias**
-- **Email**: projetos.ti@emserh.ma.gov.br
-- **Sistema**: [Portal interno de chamados]
-- **Processo**: Abrir chamado com justificativa técnica
-
-### 📈 **Status do Sistema**
-- **Monitoramento**: [URL do status page]
-- **Métricas**: [Dashboard público de métricas]
-- **Manutenções**: Comunicadas com 48h de antecedência
-
-### 🔗 **Links Importantes**
-- **Documentação**: [wiki.emserh.ma.gov.br/rtp](wiki.emserh.ma.gov.br/rtp)
-- **Treinamentos**: [treinamento.emserh.ma.gov.br](treinamento.emserh.ma.gov.br)
-- **FAQ**: [faq.emserh.ma.gov.br/rtp](faq.emserh.ma.gov.br/rtp)
 
 ---
 
