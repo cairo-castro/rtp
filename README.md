@@ -72,12 +72,12 @@ graph TD
 **Função:** Controlador principal dos relatórios
 ```mermaid
 graph TD
-    A[Controller] --> B[dashboard()]
-    A --> C[obterDadosDiarios()]
+    A[Controller] --> B["dashboard()"]
+    A --> C["obterDadosDiarios()"]
     B --> D[RelatorioModel]
     C --> D
     D --> E[Processar Dados]
-    E --> F[View/JSON Response]
+    E --> F["View/JSON Response"]
 ```
 **Métodos principais:**
 - `dashboard()` - Tela principal com filtros
@@ -244,6 +244,8 @@ graph TD
     B -->|Sim| C[Usar Meta PDT]
     B -->|Não| D{Meta Temporal?}
     D -->|Sim| E[Usar Meta Temporal]
+    D -->|Não| F[Usar Meta Fixa do Serviço]
+```
     D -->|Não| F[Usar Meta Fixa do Serviço]
 ```
 
