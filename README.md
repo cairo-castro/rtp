@@ -89,13 +89,13 @@ graph TD
 **Função:** Camada de acesso a dados (otimizada para performance)
 ```mermaid
 graph TD
-    A[Model] --> B[obterRelatorioMensalPorGrupos()]
-    A --> C[obterDadosDiariosMultiplosServicos()]
-    A --> D[obterDadosPactuadosAgenda()]
-    B --> E[Query Meta PDT + Temporal]
-    C --> F[Query Batch N+1 Fix]
-    D --> G[Query Agenda Manhã/Tarde]
-    E --> H[Base de Dados]
+    A[Model] --> B["obterRelatorioMensalPorGrupos()"]
+    A --> C["obterDadosDiariosMultiplosServicos()"]
+    A --> D["obterDadosPactuadosAgenda()"]
+    B --> E["Query Meta PDT + Temporal"]
+    C --> F["Query Batch N+1 Fix"]
+    D --> G["Query Agenda Manhã/Tarde"]
+    E --> H["Base de Dados"]
     F --> H
     G --> H
 ```
